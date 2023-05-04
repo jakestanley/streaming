@@ -40,7 +40,7 @@ try {
 
     # default arguments
     $complevel = $map.CompLevel -replace '^$', $default_complevel
-    $args = "-complevel " + $complevel + " -window -nomusic "
+    $args = "-complevel " + $complevel + " -window -nomusic -skill 4 "
 
     # default
     $demo_prefix = ""
