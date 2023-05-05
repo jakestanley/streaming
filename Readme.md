@@ -12,7 +12,7 @@ At the time of writing, the script is hard coded to read a playlist from `.\Seas
 
 The following values _MUST_ currently be present in the map CSV for the script to work:
 
-- `CompLevel` determines the compatibility level. 
+- `CompLevel` determines the compatibility level
 	- If empty, `default_complevel` from `config.json` is used
 - `Map` determines the map identifier. 
 	- Expected formats are 'E1M1' (Doom) or 'MAP01' (Doom 2)
@@ -20,8 +20,12 @@ The following values _MUST_ currently be present in the map CSV for the script t
 	- Currently DEH and WAD are supported. 
 	- Multiple files MUST be separated by a pipe character. 
 	- This can be empty.
+- `Merge` is for use with chocolate doom to specify which files require the `-merge` parameter
+	- See [WAD merging capability](https://www.chocolate-doom.org/wiki/index.php/WAD_merging_capability)
 - `Title` determines the map title that MAY be displayed on the stream
 - `Author` determines the map author that MAY be displayed on the stream
+- `Port` determines the port to use, i.e `chocolate` for chocolate doom.
+	- Defaults to dsda-doom
 
 The following values are not yet required but _MAY_ be utilised later:
 

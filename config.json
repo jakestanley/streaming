@@ -1,6 +1,9 @@
 {
 	"default_complevel": "9",
 	"dsda_path": "G:\\Games\\dsda-doom-0.25.6\\dsda-doom.exe",
+	"chocolatedoom_path": "C:\\Users\\mail\\opt\\chocolate-doom\\chocolate-doom.exe",
+	"chocolatedoom_cfg_default": "D:\\Dropbox\\Games\\Doom\\Configs\\chocolate\\default.cfg",
+	"chocolatedoom_cfg_extra": "D:\\Dropbox\\Games\\Doom\\Configs\\chocolate\\chocolate-doom.cfg",
 	"iwad_dir": "D:\\Dropbox\\Games\\Doom\\WADs\\IWADs",
 	"pwad_dir": "D:\\Dropbox\\Games\\Doom\\WADs\\Maps",
 	"demo_dir": "D:\\Dropbox\\Games\\Doom\\Demos"

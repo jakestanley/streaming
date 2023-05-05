@@ -5,6 +5,9 @@ $config = ConvertFrom-Json $json
 
 $default_complevel=$config.default_complevel
 $dsda_path=$config.dsda_path
+$chocolatedoom_path=$config.chocolatedoom_path
+$chocolatedoom_cfg_default=$config.chocolatedoom_cfg_default
+$chocolatedoom_cfg_extra=$config.chocolatedoom_cfg_extra
 $iwad_dir=$config.iwad_dir
 $pwad_dir=$config.pwad_dir
 $demo_dir=$config.demo_dir
@@ -12,6 +15,9 @@ $demo_dir=$config.demo_dir
 Write-Host "Configuration:"
 Write-Host "`tdefault_complevel: $default_complevel"
 Write-Host "`tdsda_path: $dsda_path"
+Write-Host "`tchocolatedoom_path: $chocolatedoom_path"
+Write-Host "`tchocolatedoom_cfg_default: $chocolatedoom_cfg_default"
+Write-Host "`tchocolatedoom_cfg_extra: $chocolatedoom_cfg_extra"
 Write-Host "`tiwad_dir: $iwad_dir"
 Write-Host "`tpwad_dir: $pwad_dir"
 Write-Host "`tdemo_dir: $demo_dir"
@@ -40,7 +46,7 @@ try {
 
     # default arguments
     $complevel = $map.CompLevel -replace '^$', $default_complevel
-    $args = "-complevel " + $complevel + " -window -nomusic -skill 4 "
+    $args = "-nomusic -skill 4 "
 
     # default
     $demo_prefix = ""
@@ -65,6 +71,7 @@ try {
 
     $dehs = @()
     $pwads = @()
+    $mwads = @()
 
     # build lists of map specific files we need to pass in
     foreach($patch in $map.Files.Split("|")) {
@@ -76,6 +83,11 @@ try {
         } else {
             # ignore file
         }
+    }
+
+    # for chocolate doom/vanilla wad merge emulation
+    foreach($merge in $map.Merge.Split("|")) {
+        $mwads += "$pwad_dir\$merge"
     }
 
     if ($dehs.Count -gt 0) {
@@ -100,11 +112,27 @@ try {
     $arg_record = "-record " + "$demo_dir" + "\" + $demo_prefix + "-" + $map.Map + "-" + "$time" + ".lmp "
     $args += $arg_record
 
-    Write-Host "Starting dsda-doom with the following arguments:"
+    if ($map.Port -eq "chocolate") {
+
+        if ($mwads.Count -gt 0) {
+            $args += "-merge $mwads "
+        }
+        
+        Write-Host "Starting chocolate-doom with the following arguments:"
+        $args += "-config $chocolatedoom_cfg_default -extraconfig $chocolatedoom_cfg_extra "
+        $executable = $chocolatedoom_path
+    } else {
+        # default to dsda-doom and set complevel args
+        $args += "-complevel " + $complevel + " -window "
+        Write-Host "Starting dsda-doom with the following arguments:"
+        $executable = $dsda_path
+    }
+
     Write-Host $args
+    Start-Sleep 3
 
     $r_client.SetCurrentProgramScene("Playing")
-    Start-Process -FilePath $dsda_path -ArgumentList $args -Wait
+    Start-Process -FilePath $executable -ArgumentList $args -Wait
     $r_client.SetCurrentProgramScene("Waiting")
 
     # $resp = $r_client.GetVersion()
