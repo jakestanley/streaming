@@ -16,6 +16,10 @@ def getMapNameString(map):
 _json = open('./config-mac.json') 
 config = json.load(_json) 
 
+obs = obs.ReqClient(host='localhost', port=4455, password='')
+scenes = obs.get_scene_list()
+obs.set_current_program_scene('Waiting')
+
 _csv = open("./Season1.csv")
 _csv_reader = csv.DictReader(_csv)
 
@@ -114,14 +118,6 @@ else:
 command = [executable]
 command.extend(args)
 
-# TODO: SetCurrentProgramScene("Playing")
-# TODO: start process with args and wait for exit
-
+obs.set_current_program_scene('Playing')
 running = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-# TODO: SetCurrentProgramScene("Waiting")
-#print(status)
-#exit(0)
-#cl = obs.ReqClient(host='localhost', port=4455, password='')
-
-#cur_scene = cl.get_current_program_scene()
-#print("This scene: " + cur_scene.current_program_scene_name)
+obs.set_current_program_scene('Waiting')
