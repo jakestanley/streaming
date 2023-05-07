@@ -8,6 +8,7 @@ import csv
 import re
 import os
 import time
+import subprocess
 
 def getMapNameString(map):
     return f"#{map['Ranking']}: {map['Title']} | {map['Author']} | {map['Map']}"
@@ -31,8 +32,9 @@ if index == None:
     exit(0)
 
 # default arguments
+args = []
 complevel = maps[index]['CompLevel'] or config['default_complevel']
-args = '-nomusic -skill 4'
+args.extend(['-nomusic', '-skill', '4'])
 
 # default
 demo_prefix = ""
@@ -45,16 +47,16 @@ DOOM2_regex=r'^MAP(\d+)$'
 if re.match(DOOM_regex, mapId):
     print("Detected a Doom map string")
     demo_prefix="DOOM" # default just in case no pwad is provided
-    episodeno = int(re.match(DOOM_regex, mapId).group(1))
-    mapno =     int(re.match(DOOM_regex, mapId).group(2))
-    args += f"-warp {episodeno} {mapno} "
-    args += f"-iwad {config['iwad_dir']}/DOOM.wad "
+    episodeno = (re.match(DOOM_regex, mapId).group(1))
+    mapno =     (re.match(DOOM_regex, mapId).group(2))
+    args.extend(['-warp', episodeno, mapno])
+    args.extend(['-iwad', f"{config['iwad_dir']}/DOOM.wad"])
 elif re.match(DOOM2_regex, maps[index]['Map']):
     print("Detected a Doom II map string")
     demo_prefix="DOOM2" # default just in case no pwad is provided
-    mapno = int(re.match(DOOM2_regex, mapId).group(1))
-    args += f"-warp {mapno} "
-    args += f"-iwad {config['iwad_dir']}/DOOM2.wad "
+    mapno = (re.match(DOOM2_regex, mapId).group(1))
+    args.extend(['-warp', mapno])
+    args.extend(['-iwad', f"{config['iwad_dir']}/DOOM2.wad"])
 else:
     print(f"Could not parse Map value: {maps[index]['Map']}")
     exit(1)
@@ -80,46 +82,46 @@ for merge in merges:
     mwads.append(f"{config['pwad_dir']}/{merge}")
 
 if len(dehs) > 0:
-    args += "-deh "
-    for deh in dehs:
-        args += f"{deh} "
+    args.append("-deh")
+    args.extend(dehs)
 
 if len(pwads) > 0:
-    args += "-file "
+    args.append("-file")
     demo_prefix = os.path.splitext(os.path.basename(pwads[0]))[0]
-    for pwad in pwads:
-        args += f"{pwad} "
+    args.extend(pwads)
 
 # set map title in OBS (TODO)
 ## SetInputSettings
 
 # record the demo
 timestr = datetime.now().strftime("%Y-%m-%dT%H%M%S")
-arg_record = f"-record {config['demo_dir']}/{demo_prefix}-{mapId}-{timestr}.lmp "
-args += arg_record
+args.append("-record")
+args.append(f"{config['demo_dir']}/{demo_prefix}-{mapId}-{timestr}.lmp")
 
 if maps[index]['Port'] == 'chocolate':
     print("Starting chocolate-doom with the following arguments:")
     if len(merges) > 0:
-        args += "-merge "
-        for merge in merges:
-            args += f"{merge} "
+        args.append("-merge")
+        args.extend(merges)
 
-    args += f"-config {config['chocolatedoom_cfg_default']} -extraconfig {config['chocolatedoom_cfg_extra']} "
+    args.extend(["-config", config['chocolatedoom_cfg_default'], "-extraconfig", config['chocolatedoom_cfg_extra']])
     executable = config['chocolatedoom_path']
 else:
     print("Starting dsda-doom with the following arguments:")
+    args.extend(['-complevel', complevel, '-window'])
     executable = config['dsda_path']
 
-print(args)
-time.sleep(3)
+command = [executable]
+command.extend(args)
 
 # TODO: SetCurrentProgramScene("Playing")
 # TODO: start process with args and wait for exit
-# TODO: SetCurrentProgramScene
 
-exit(0)
-cl = obs.ReqClient(host='localhost', port=4455, password='')
+running = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+# TODO: SetCurrentProgramScene("Waiting")
+#print(status)
+#exit(0)
+#cl = obs.ReqClient(host='localhost', port=4455, password='')
 
-cur_scene = cl.get_current_program_scene()
-print("This scene: " + cur_scene.current_program_scene_name)
+#cur_scene = cl.get_current_program_scene()
+#print("This scene: " + cur_scene.current_program_scene_name)
