@@ -83,7 +83,18 @@ PowerShell Gallery: https://www.powershellgallery.com/packages/OBSWebSocket/0.0.
 Install-Module -Name OBSWebSocket -Scope CurrentUser
 ```
 
-### Scripting
+## Python
+
+### Install dependencies
+
+- obsws-python
+- [simple-term-menu](https://pypi.org/project/simple-term-menu/)
+
+```
+pip install -U obsws-python simple-term-menu
+```
+
+## Scripting OBS
 
 I'm referencing my bass stream from the past year when writing OBS commands: https://github.com/jakestanley/midi-obs-ws-thing/blob/main/app.js
 
