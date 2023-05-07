@@ -55,14 +55,15 @@ try {
     # detect which IWAD we need and the map id format
     if ($map.Map -match "^E(\d)M(\d)$") {
         Write-Host "Detected a Doom map string"
+        $demo_prefix="DOOM" # default just in case no pwad is provided
         $episodeno = [int]$Matches[1]
         $mapno = [int]$Matches[2]
         $args += "-warp $episodeno $mapno "
         $args += "-iwad $iwad_dir\DOOM.WAD "
     } elseif($map.Map -match "^MAP(\d+)$") {
         Write-Host "Detected a Doom II map string"
+        $demo_prefix="DOOM2" # default just in case no pwad is provided
         $mapno = [int]$Matches[1]
-        Write-Host $mapno
         $args += "-warp $mapno "
         $args += "-iwad $iwad_dir\DOOM2.WAD "
     } else {
