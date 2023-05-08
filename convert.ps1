@@ -1,0 +1,1 @@
+Get-ChildItem -Path "." -Filter *.mkv | ForEach-Object { ffmpeg.exe -hwaccel cuvid -i $_.FullName -c:v h264_nvenc -cq:v 20 -b:v 4M -maxrate:v 8M -bufsize:v 16M -c:a copy $($_.FullName -replace '.mkv','.mp4') }
