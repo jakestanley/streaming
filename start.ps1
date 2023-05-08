@@ -1,3 +1,11 @@
+Param(
+    [switch] [Parameter(HelpMessage="OBS control will be disabled")] $NoObs,
+    [switch] [Parameter(HelpMessage="Re-record a completed demo")] $ReRecord,
+    [switch] [Parameter(HelpMessage="play a random map")] $Random,
+    [switch] [Parameter(HelpMessage="Demo recording will be disabled")] $NoDemo,
+    [string] [Parameter(HelpMessage="Override source port")] $SourcePort
+)
+
 Import-Module OBSWebSocket
 
 $json = Get-Content .\config.json -Raw
@@ -11,6 +19,16 @@ $chocolatedoom_cfg_extra=$config.chocolatedoom_cfg_extra
 $iwad_dir=$config.iwad_dir
 $pwad_dir=$config.pwad_dir
 $demo_dir=$config.demo_dir
+
+if ($NoObs) {
+    Write-Host "No Obs selected"
+} else {
+    Write-Host "OBS will be controlled"
+}
+
+if ($SourcePort) {
+    Write-Host "Using source port "$SourcePort
+}
 
 Write-Host "Configuration:"
 Write-Host "`tdefault_complevel: $default_complevel"
