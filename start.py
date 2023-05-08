@@ -9,9 +9,16 @@ import re
 import os
 import time
 import subprocess
+import argparse
 
 def getMapNameString(map):
     return f"#{map['Ranking']}: {map['Title']} | {map['Author']} | {map['Map']}"
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-sp", "--source-port", type=str, help="override source port")
+parser.add_argument("-rr", "--re-record", action='store_true', help="re-record a completed demo")
+parser.add_argument("-no", "--no-obs", action='store_true', help="disable OBS control")
+args = parser.parse_args()
 
 _json = open('./config-mac.json') 
 config = json.load(_json) 
@@ -96,6 +103,9 @@ if len(pwads) > 0:
 
 # set map title in OBS (TODO)
 ## SetInputSettings
+settings = {}
+settings['Text'] = maps[index]['Title']
+obs.set_input_settings("Text", settings=settings)
 
 # record the demo
 timestr = datetime.now().strftime("%Y-%m-%dT%H%M%S")
