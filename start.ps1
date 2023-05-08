@@ -38,7 +38,7 @@ if ($NoObs) {
 }
 
 if ($SourcePort) {
-    Write-Host "Overriding with source port '{}'" -f $SourcePort
+    Write-Host ("Overriding with source port '{0}'" -f $SourcePort)
 }
 
 Write-Debug "Configuration:"
@@ -154,16 +154,30 @@ try {
         }
     })
 
+    if ($ReRecord) {
+        $demos = @()
+        Get-ChildItem -Path $demo_dir -Filter ("{0}*.lmp" -f $demo_prefix) | ForEach-Object {
+            $demos += $_.NameString
+        }
+        $demo = $demos | Out-GridView -Title "Select a demo" -OutputMode Single
+        if (!$demo) {
+            Write-Error "A demo was not selected"
+            Exit 1
+        }
+        $args.AddRange(@("-playdemo", (Join-Path -Path $demo_dir -ChildPath $demo)))
+    }
 
     # record the demo
     # TODO: check demo directory is writeable
-    if (!$NoDemo) {
+    if ($ReRecord || $NoDemo) {} else {
         $time= (Get-Date).ToString("yyyy-MM-ddTHmmss")
         $args.AddRange(@("-record", (Join-Path -Path $demo_dir -ChildPath ("{0}-{1}-{2}.lmp" -f $demo_prefix, $map.Map, $time))))
     }
 
     # if the port must be chocolate doom or we have overridden to use chocolate doom (support for more later)
-    if ($map.Port -eq "chocolate" || $SourcePort -eq "chocolate") {
+    $SourcePort = ($SourcePort -ne "") ? $SourcePort : $map.Port
+    Write-Debug $SourcePort
+    if ($SourcePort -ne "") {
 
         if ($mwads.Count -gt 0) {
             $args.Add("-merge")
@@ -171,11 +185,11 @@ try {
         }
         
         Write-Debug "Starting chocolate-doom with the following arguments:"
-        $args.AddRange(@("-config", $chocolatedoom_cfg_default, "-extraconfig", $chocolatedoom_cfg_extra)) 
+        $args.AddRange(@("-config", $chocolatedoom_cfg_default, "-extraconfig", $chocolatedoom_cfg_extra))
         $executable = $chocolatedoom_path
     } else {
         # default to dsda-doom and set complevel args
-        $args.AddRange(@("-complevel", $complevel, "-window")) 
+        $args.AddRange(@("-complevel", $complevel, "-window"))
         Write-Debug "Starting dsda-doom with the following arguments:"
         $executable = $dsda_path
     }
@@ -186,7 +200,9 @@ try {
     Start-Sleep 3
 
     ${r_client}?.SetCurrentProgramScene("Playing")
+    $ReRecord ? (${r_client}?.StartRecord()) : $null
     Start-Process -FilePath $executable -ArgumentList $args -Wait
+    $ReRecord ? (${r_client}?.StopRecord()) : $null
     ${r_client}?.SetCurrentProgramScene("Waiting")
 
 } finally { 

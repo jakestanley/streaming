@@ -76,8 +76,9 @@ Close PowerShell and launch PowerShell 7. You may wish to set this as the defaul
 
 ### Install OBSWebSocket
 
-Documentation: https://github.com/onyx-and-iris/OBSWebSocket-Powershell
-PowerShell Gallery: https://www.powershellgallery.com/packages/OBSWebSocket/0.0.4
+- Documentation: https://github.com/onyx-and-iris/OBSWebSocket-Powershell
+- Requests: https://github.com/obsproject/obs-websocket/blob/master/docs/generated/protocol.md#requests
+- PowerShell Gallery: https://www.powershellgallery.com/packages/OBSWebSocket/0.0.4
 
 ```
 Install-Module -Name OBSWebSocket -Scope CurrentUser
