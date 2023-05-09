@@ -204,7 +204,7 @@ try {
 
     # record the demo
     # TODO: check demo directory is writeable
-    if ($ReRecord || $NoDemo) {} else {
+    if ($ReRecord -or $NoDemo) {} else {
         $time= (Get-Date).ToString("yyyy-MM-ddTHmmss")
         $dargs.AddRange(@("-record", (Join-Path -Path $demo_dir -ChildPath ("{0}-{1}-{2}.lmp" -f $demo_prefix, $map.Map, $time))))
     }
