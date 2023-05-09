@@ -16,6 +16,12 @@
             "request": "launch",
             "script": "${workspaceFolder}/start.ps1",
             "args": ["-ConfigPath", "./config-mac.json", "-Debug", "-NoObs", "-ReRecord"]
+        }, {
+            "name": "PowerShell (Mac): Random, NoObs, NoDemo",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/start.ps1",
+            "args": ["-ConfigPath", "./config-mac.json", "-Debug", "-NoObs", "-Random", "-NoDemo"]
         }
     ]
 }

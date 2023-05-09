@@ -2,7 +2,7 @@
 Param(
     [switch] [Parameter(HelpMessage="OBS control will be disabled")] $NoObs,
     [switch] [Parameter(HelpMessage="Re-record a completed demo")] $ReRecord,
-    [switch] [Parameter(HelpMessage="play a random map")] $Random,
+    [switch] [Parameter(HelpMessage="Play a random map")] $Random,
     [switch] [Parameter(HelpMessage="Demo recording will be disabled")] $NoDemo,
     [string] [Parameter(HelpMessage="Override source port")] $SourcePort,
     [string] [Parameter(HelpMessage="Path to configuration file")] $ConfigPath = ".\config.json",
@@ -119,7 +119,11 @@ try {
         $maps += $row
     }
 
-    $map = GetMapSelection($maps)
+    if ($Random) {
+        $map = $maps[(Get-Random -Minimum 0 -Maximum $maps.length)]
+    } else {
+        $map = GetMapSelection($maps)
+    }
 
     if (!$map) {
         Write-Error "A map was not selected"
