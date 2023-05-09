@@ -128,8 +128,8 @@ try {
 
     # default arguments
     $complevel = $map.CompLevel -replace '^$', $default_complevel
-    $args = [System.Collections.ArrayList]::new()
-    $args.AddRange(@("-nomusic", "-skill", 4))
+    $dargs = [System.Collections.ArrayList]::new()
+    $dargs.AddRange(@("-nomusic", "-skill", 4))
     $demo_prefix = ""
 
     # detect which IWAD we need and the map id format
@@ -138,14 +138,14 @@ try {
         $demo_prefix="DOOM" # default just in case no pwad is provided
         $episodeno = [int]$Matches[1]
         $mapno = [int]$Matches[2]
-        $args.AddRange(@("-warp", $episodeno, $mapno))
-        $args.AddRange(@("-iwad", (Join-Path -Path $iwad_dir -ChildPath "DOOM.WAD")))
+        $dargs.AddRange(@("-warp", $episodeno, $mapno))
+        $dargs.AddRange(@("-iwad", (Join-Path -Path $iwad_dir -ChildPath "DOOM.WAD")))
     } elseif($map.Map -match "^MAP(\d+)$") {
         Write-Host "Detected a Doom II map string"
         $demo_prefix="DOOM2" # default just in case no pwad is provided
         $mapno = [int]$Matches[1]
-        $args.AddRange(@("-warp", $mapno))
-        $args.AddRange(@("-iwad", (Join-Path -Path $iwad_dir -ChildPath "DOOM2.WAD")))
+        $dargs.AddRange(@("-warp", $mapno))
+        $dargs.AddRange(@("-iwad", (Join-Path -Path $iwad_dir -ChildPath "DOOM2.WAD")))
     } else {
         Write-Error "Could not parse Map value: '$map.Map'"
     }
@@ -172,14 +172,14 @@ try {
     }
 
     if ($dehs.Count -gt 0) {
-        $args.Add("-deh");
-        $args.AddRange($dehs)
+        $dargs.Add("-deh");
+        $dargs.AddRange($dehs)
     }
 
     if ($pwads.Count -gt 0) {
         $demo_prefix = [System.IO.Path]::GetFileNameWithoutExtension($pwads[0])
-        $args.Add("-file")
-        $args.AddRange($pwads)
+        $dargs.Add("-file")
+        $dargs.AddRange($pwads)
     }
 
     # Set map title in OBS
@@ -196,14 +196,14 @@ try {
             Write-Error "A demo was not selected"
             Exit 1
         }
-        $args.AddRange(@("-playdemo", (Join-Path -Path $demo_dir -ChildPath $demo)))
+        $dargs.AddRange(@("-playdemo", (Join-Path -Path $demo_dir -ChildPath $demo)))
     }
 
     # record the demo
     # TODO: check demo directory is writeable
     if ($ReRecord || $NoDemo) {} else {
         $time= (Get-Date).ToString("yyyy-MM-ddTHmmss")
-        $args.AddRange(@("-record", (Join-Path -Path $demo_dir -ChildPath ("{0}-{1}-{2}.lmp" -f $demo_prefix, $map.Map, $time))))
+        $dargs.AddRange(@("-record", (Join-Path -Path $demo_dir -ChildPath ("{0}-{1}-{2}.lmp" -f $demo_prefix, $map.Map, $time))))
     }
 
     # if the port must be chocolate doom or we have overridden to use chocolate doom (support for more later)
@@ -212,28 +212,28 @@ try {
     if ($SourcePort -ne "") {
 
         if ($mwads.Count -gt 0) {
-            $args.Add("-merge")
-            $args.AddRange($mwads)
+            $dargs.Add("-merge")
+            $dargs.AddRange($mwads)
         }
         
         Write-Debug "Starting chocolate-doom with the following arguments:"
-        $args.AddRange(@("-config", $chocolatedoom_cfg_default, "-extraconfig", $chocolatedoom_cfg_extra))
+        $dargs.AddRange(@("-config", $chocolatedoom_cfg_default, "-extraconfig", $chocolatedoom_cfg_extra))
         $executable = $chocolatedoom_path
     } else {
         # default to dsda-doom and set complevel args
-        $args.AddRange(@("-complevel", $complevel, "-window"))
+        $dargs.AddRange(@("-complevel", $complevel, "-window"))
         Write-Debug "Starting dsda-doom with the following arguments:"
         $executable = $dsda_path
     }
 
-    foreach($arg in $args) {
+    foreach($arg in $dargs) {
         Write-Debug `t`t$arg
     }
     Start-Sleep 3
 
     ${r_client}?.SetCurrentProgramScene("Playing")
     $ReRecord ? (${r_client}?.StartRecord()) : $null
-    Start-Process -FilePath $executable -ArgumentList $args -Wait
+    Start-Process -FilePath $executable -ArgumentList $dargs -Wait
     $ReRecord ? (${r_client}?.StopRecord()) : $null
     ${r_client}?.SetCurrentProgramScene("Waiting")
 
