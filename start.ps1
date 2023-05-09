@@ -127,7 +127,6 @@ try {
     }
 
     # default arguments
-    $complevel = $map.CompLevel -replace '^$', $default_complevel
     $dargs = [System.Collections.ArrayList]::new()
     $dargs.AddRange(@("-nomusic", "-skill", 4))
     $demo_prefix = ""
@@ -220,8 +219,13 @@ try {
         $dargs.AddRange(@("-config", $chocolatedoom_cfg_default, "-extraconfig", $chocolatedoom_cfg_extra))
         $executable = $chocolatedoom_path
     } else {
-        # default to dsda-doom and set complevel args
-        $dargs.AddRange(@("-complevel", $complevel, "-window"))
+
+        $complevel = $map.CompLevel -replace '^$', $default_complevel
+        if ($complevel -ne "") {
+            $dargs.AddRange(@("-complevel", $complevel))
+        }
+        
+        $dargs.Add("-window")
         Write-Debug "Starting dsda-doom with the following arguments:"
         $executable = $dsda_path
     }
