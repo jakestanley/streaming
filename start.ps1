@@ -19,6 +19,60 @@ function GetMapNameString {
     return '"#{0}: {1} | {2} | {3}"' -f $map.Ranking, $map.Title, $map.Author, $map.Map
 }
 
+function GetMapSelection {
+    param (
+        $Maps = $(throw "Maps argument missing")
+    )
+    if(!(Get-Command Out-GridView -ErrorAction SilentlyContinue)) {
+        Write-Debug "Out-GridView not supported. Attempting to use simple-term-menu"
+        $options = @()
+        foreach($map in $Maps) {
+            $options += GetMapNameString($map)
+        }
+        
+        # uses last exit code to obtain selected item
+        & simple-term-menu -t "Select a map" $options
+        $selected = $LASTEXITCODE-1
+        if ($selected -lt 0) {
+            return $null
+        } else {
+            $map = $Maps[$selected]
+        }
+    } else {
+        $map = $Maps | Out-GridView -Title "Select a map" -OutputMode Single
+    }
+    return $map
+}
+
+function GetDemoSelection {
+    param (
+        $DemoDir = $(throw "DemoDir argument missing"),
+        $DemoPrefix = $(throw "DemoPrefix argument missing")
+    )
+
+    $demos = @()
+    Get-ChildItem -Path $DemoDir -Filter ("{0}*.lmp" -f $DemoPrefix) | ForEach-Object {
+        $demos += $_.NameString
+    }
+
+    if(!(Get-Command Out-GridView -ErrorAction SilentlyContinue)) {
+        Write-Debug "Out-GridView not supported. Attempting to use simple-term-menu"
+
+        # uses last exit code to obtain selected item
+        & simple-term-menu -t "Select a demo file" $demos
+        $selected = $LASTEXITCODE-1
+        if ($selected -lt 0) {
+            return $null
+        } else {
+            $demo = $demos[$selected]
+        }
+    } else {
+        # TODO multiple demo support
+        $demo = $demos | Out-GridView -Title "Select a demo" -OutputMode Single
+    }
+    return $demo
+}
+
 # script begins in earnest
 $json = Get-Content $ConfigPath -Raw
 $config = ConvertFrom-Json $json
@@ -65,25 +119,7 @@ try {
         $maps += $row
     }
 
-    if(!(Get-Command Out-GridView -ErrorAction SilentlyContinue)) {
-        Write-Debug "Out-GridView not supported. Attempting to use simple-term-menu"
-        $options = @()
-        foreach($map in $maps) {
-            $options += GetMapNameString($map)
-        }
-        
-        # use last exit code to obtain selected item
-        & simple-term-menu $options
-        $selected = $LASTEXITCODE-1
-        if ($selected -lt 0) {
-            Write-Error "A map was not selected"
-            Exit 1
-        }
-
-        $map = $maps[$selected]
-    } else {
-        $map = $maps | Out-GridView -Title "Select a map" -OutputMode Single
-    }
+    $map = GetMapSelection($maps)
 
     if (!$map) {
         Write-Error "A map was not selected"
@@ -155,12 +191,8 @@ try {
     })
 
     if ($ReRecord) {
-        $demos = @()
-        Get-ChildItem -Path $demo_dir -Filter ("{0}*.lmp" -f $demo_prefix) | ForEach-Object {
-            $demos += $_.NameString
-        }
-        $demo = $demos | Out-GridView -Title "Select a demo" -OutputMode Single
-        if (!$demo) {
+        $demo = GetDemoSelection $demo_dir $demo_prefix
+        if(!$demo) {
             Write-Error "A demo was not selected"
             Exit 1
         }

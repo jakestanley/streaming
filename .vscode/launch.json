@@ -5,11 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "PowerShell: Launch Script",
+            "name": "PowerShell (Mac): Debug, NoObs",
             "type": "PowerShell",
             "request": "launch",
             "script": "${workspaceFolder}/start.ps1",
             "args": ["-ConfigPath", "./config-mac.json", "-Debug", "-NoObs"]
+        }, {
+            "name": "PowerShell (Mac): Debug, NoObs, ReRecord",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/start.ps1",
+            "args": ["-ConfigPath", "./config-mac.json", "-Debug", "-NoObs", "-ReRecord"]
         }
     ]
 }
