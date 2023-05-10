@@ -11,6 +11,7 @@ Param(
 )
 
 Import-Module OBSWebSocket
+Import-Module ./common.psm1
 
 # declare functions here
 function GetMapNameString {
@@ -99,7 +100,6 @@ function RenameOutputFile {
 $json = Get-Content $ConfigPath -Raw
 $config = ConvertFrom-Json $json
 
-# TODO: should use source port configured comp level if this is not set
 $default_complevel=$config.default_complevel
 $dsda_path=$config.dsda_path
 $chocolatedoom_path=$config.chocolatedoom_path
@@ -176,26 +176,10 @@ try {
         Write-Error "Could not parse Map value: '$map.Map'"
     }
 
-    $dehs = @()
-    $pwads = @()
-    $mwads = @()
-
-    # build lists of map specific files we need to pass in
-    foreach($patch in $map.Files.Split("|")) {
-        $fileExtension = [System.IO.Path]::GetExtension($patch).ToLower()
-        if ($fileExtension -like "*.deh") {
-            $dehs += Join-Path -Path $pwad_dir -ChildPath $patch
-        } elseif($fileExtension -like "*.wad") {
-            $pwads += Join-Path -Path $pwad_dir -ChildPath $patch
-        } else {
-            # ignore file
-        }
-    }
-
-    # for chocolate doom/vanilla wad merge emulation
-    foreach($merge in $map.Merge.Split("|")) {
-        $mwads += Join-Path -Path $pwad_dir -ChildPath $merge
-    }
+    $p = GetPatches $pwad_dir $map.Files $map.Merge
+    $dehs = $p.Dehs
+    $pwads = $p.Pwads
+    $mwads = $p.Mwads
 
     if ($dehs.Count -gt 0) {
         $dargs.Add("-deh");
