@@ -74,6 +74,27 @@ function GetDemoSelection {
     return $demo
 }
 
+function RenameOutputFile {
+    Param (
+        $OutputPath,
+        $DemoName
+        )
+
+    if ($OutputPath -eq "") {
+        Write-Debug "OutputPath was empty"
+    } elseif($DemoName -eq "") {
+        Write-Debug "DemoName was empty"
+    } else {
+        $extension = [System.IO.Path]::GetExtension($OutputPath)
+        $newOutputPath = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($OutputPath), $DemoName + $extension)
+        Write-Debug ("Moving `n`t'{0}' to `n`t'{1}'" -f $OutputPath, $newOutputPath)
+
+        # pause for 5 seconds to let OBS release any handles
+        Start-Sleep(5)
+        Rename-Item -Path $OutputPath -NewName $newOutputPath
+    }
+}
+
 # script begins in earnest
 $json = Get-Content $ConfigPath -Raw
 $config = ConvertFrom-Json $json
@@ -204,11 +225,15 @@ try {
         $dargs.AddRange(@("-playdemo", (Join-Path -Path $demo_dir -ChildPath $demo)))
     }
 
+    # set the name of the demo. this format is subject to change
+    $time= (Get-Date).ToString("yyyy-MM-ddTHmmss")
+    $demo_name = "{0}-{1}-{2}" -f $demo_prefix, $map.Map, $time
+
     # record the demo
     # TODO: check demo directory is writeable
+    Write-Debug ("Demo name: '{0}'" -f $demo_name)
     if ($ReRecord -or $NoDemo) {} else {
-        $time= (Get-Date).ToString("yyyy-MM-ddTHmmss")
-        $dargs.AddRange(@("-record", (Join-Path -Path $demo_dir -ChildPath ("{0}-{1}-{2}.lmp" -f $demo_prefix, $map.Map, $time))))
+        $dargs.AddRange(@("-record", (Join-Path -Path $demo_dir -ChildPath ("{0}.lmp" -f $demo_name))))
     }
 
     # if the port must be chocolate doom or we have overridden to use chocolate doom (support for more later)
@@ -244,8 +269,10 @@ try {
     ${r_client}?.SetCurrentProgramScene("Playing")
     $ReRecord ? (${r_client}?.StartRecord()) : $null
     Start-Process -FilePath $executable -ArgumentList $dargs -Wait
-    ($ReRecord -or $AutoRecord) ? (${r_client}?.StopRecord()) : $null
+    ($ReRecord -or $AutoRecord) ? ($r_output = ${r_client}?.StopRecord()) : $null
     ${r_client}?.SetCurrentProgramScene("Waiting")
+
+    RenameOutputFile $r_output.outputPath $demo_name
 
 } finally { 
     ${r_client}?.TearDown()
