@@ -2,6 +2,7 @@
 Param(
     [switch] [Parameter(HelpMessage="OBS control will be disabled")] $NoObs,
     [switch] [Parameter(HelpMessage="Re-record a completed demo")] $ReRecord,
+    [switch] [Parameter(HelpMessage="Automatically record and stop when gameplay ends")] $AutoRecord,
     [switch] [Parameter(HelpMessage="Play a random map")] $Random,
     [switch] [Parameter(HelpMessage="Demo recording will be disabled")] $NoDemo,
     [string] [Parameter(HelpMessage="Override source port")] $SourcePort,
@@ -119,6 +120,7 @@ try {
         $maps += $row
     }
 
+    $AutoRecord ? (${r_client}?.StartRecord()) : $null
     if ($Random) {
         $map = $maps[(Get-Random -Minimum 0 -Maximum $maps.length)]
     } else {
@@ -242,7 +244,7 @@ try {
     ${r_client}?.SetCurrentProgramScene("Playing")
     $ReRecord ? (${r_client}?.StartRecord()) : $null
     Start-Process -FilePath $executable -ArgumentList $dargs -Wait
-    $ReRecord ? (${r_client}?.StopRecord()) : $null
+    ($ReRecord -or $AutoRecord) ? (${r_client}?.StopRecord()) : $null
     ${r_client}?.SetCurrentProgramScene("Waiting")
 
 } finally { 
