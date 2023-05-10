@@ -99,7 +99,6 @@ function RenameOutputFile {
 $json = Get-Content $ConfigPath -Raw
 $config = ConvertFrom-Json $json
 
-# TODO: should use source port configured comp level if this is not set
 $default_complevel=$config.default_complevel
 $dsda_path=$config.dsda_path
 $chocolatedoom_path=$config.chocolatedoom_path
