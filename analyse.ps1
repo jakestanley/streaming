@@ -20,7 +20,8 @@ foreach ($map in $csvData) {
     $demos_for_map = Get-ChildItem -Path $cfg.demo_dir -Filter ("{0}*" -f $demo_prefix)
     if ($demos_for_map.Count -gt 0) {
         $table_rows += [PSCustomObject]@{
-            Map = $demo_prefix
+            Map = $map.Title
+            MapId = $map.Map
             Attempts = $demos_for_map.Count
         }
     }
