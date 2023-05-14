@@ -4,6 +4,7 @@
 	"chocolatedoom_path": "chocolate-doom",
 	"chocolatedoom_cfg_default": "/Users/jake/Dropbox/Games/Doom/Configs/chocolate/default.cfg",
 	"chocolatedoom_cfg_extra": "/Users/jake/Dropbox/Games/Doom/Configs/chocolate/chocolate-doom.cfg",
+	"crispydoom_path": "crispy-doom",
 	"iwad_dir": "/Users/jake/Dropbox/Games/Doom/WADs/IWADs",
 	"pwad_dir": "/Users/jake/Dropbox/Games/Doom/WADs/Maps",
 	"demo_dir": "/Users/jake/Dropbox/Games/Doom/Demos"

@@ -5,6 +5,7 @@ Param(
     [switch] [Parameter(HelpMessage="Automatically record and stop when gameplay ends")] $AutoRecord,
     [switch] [Parameter(HelpMessage="Play a random map")] $Random,
     [switch] [Parameter(HelpMessage="Demo recording will be disabled")] $NoDemo,
+    [switch] [Parameter(HelpMessage="Use Crispy Doom instead of Chocolate Doom")] $Crispy,
     [string] [Parameter(HelpMessage="Override source port")] $SourcePort,
     [string] [Parameter(HelpMessage="Path to configuration file")] $ConfigPath = ".\config.json",
     [string] [Parameter(HelpMessage="Path to maps CSV file")] $CsvFilePath = ".\Season1.csv"
@@ -229,10 +230,16 @@ try {
             $dargs.Add("-merge")
             $dargs.AddRange($mwads)
         }
-        
-        Write-Debug "Starting chocolate-doom with the following arguments:"
+
+        if ($Crispy) {
+            Write-Debug "Starting crispy-doom with the following arguments:"
+            $executable = $config.crispydoom_path
+        } else {
+            Write-Debug "Starting chocolate-doom with the following arguments:"
+            $executable = $chocolatedoom_path
+        }
+
         $dargs.AddRange(@("-config", $chocolatedoom_cfg_default, "-extraconfig", $chocolatedoom_cfg_extra))
-        $executable = $chocolatedoom_path
     } else {
 
         $complevel = $map.CompLevel -replace '^$', $default_complevel

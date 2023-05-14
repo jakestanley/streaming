@@ -9,6 +9,8 @@ function GetPatches {
     $pwads = @()
     $mwads = @()
 
+    # TODO null checks on $Merge
+
     # build lists of map specific files we need to pass in
     foreach($patch in $Files.Split("|")) {
         $fileExtension = [System.IO.Path]::GetExtension($patch).ToLower()
