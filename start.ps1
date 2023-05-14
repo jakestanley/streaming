@@ -256,7 +256,9 @@ try {
     ($ReRecord -or $AutoRecord) ? ($r_output = ${r_client}?.StopRecord()) : $null
     ${r_client}?.SetCurrentProgramScene("Waiting")
 
-    RenameOutputFile $r_output.outputPath $demo_name
+    if ($r_output) {
+        RenameOutputFile $r_output.outputPath $demo_name
+    }
 
 } finally { 
     ${r_client}?.TearDown()

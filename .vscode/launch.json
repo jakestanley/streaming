@@ -11,6 +11,12 @@
             "script": "${workspaceFolder}/start.ps1",
             "args": ["-ConfigPath", "./config-mac.json", "-Debug", "-NoObs"]
         }, {
+            "name": "Start (Mac): Debug, NoObs, NoDemo",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/start.ps1",
+            "args": ["-ConfigPath", "./config-mac.json", "-Debug", "-NoObs", "-NoDemo"]
+        }, {
             "name": "Start (Mac): Debug, NoObs, ReRecord",
             "type": "PowerShell",
             "request": "launch",
