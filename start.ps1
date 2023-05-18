@@ -6,6 +6,7 @@ Param(
     [switch] [Parameter(HelpMessage="Play a random map")] $Random,
     [switch] [Parameter(HelpMessage="Demo recording will be disabled")] $NoDemo,
     [switch] [Parameter(HelpMessage="Use Crispy Doom instead of Chocolate Doom")] $Crispy,
+    [switch] [Parameter(HelpMessage="If saved, play last map")] $Last,
     [string] [Parameter(HelpMessage="Override source port")] $SourcePort,
     [string] [Parameter(HelpMessage="Path to configuration file")] $ConfigPath = ".\config.json",
     [string] [Parameter(HelpMessage="Path to maps CSV file")] $CsvFilePath = ".\Season1.csv"
@@ -26,6 +27,15 @@ function GetMapSelection {
     param (
         $Maps = $(throw "Maps argument missing")
     )
+    if ($Last) {
+        if (Test-Path -Path ".\last.json") {
+            $lastmap = Get-Content ".\last.json" -Raw | ConvertFrom-Json
+            Write-Debug ("-Last flag set and found previous map")
+            return $lastmap
+        } else {
+            Write-Debug ("-Last flag set but no previous map was found")
+        }
+    }
     if(!(Get-Command Out-GridView -ErrorAction SilentlyContinue)) {
         Write-Debug "Out-GridView not supported. Attempting to use simple-term-menu"
         $options = @()
@@ -44,6 +54,7 @@ function GetMapSelection {
     } else {
         $map = $Maps | Out-GridView -Title "Select a map" -OutputMode Single
     }
+    $map | ConvertTo-Json | Out-File ".\last.json"
     return $map
 }
 
