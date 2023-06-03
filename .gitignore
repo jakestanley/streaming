@@ -1,3 +1,7 @@
 *.mkv
 *.cfg
 *.csv
+*.txt
+*.jpg
+*.png
+tmp/
