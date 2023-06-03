@@ -74,7 +74,9 @@ winget install --id Microsoft.Powershell --source winget
 
 Close PowerShell and launch PowerShell 7. You may wish to set this as the default Windows Terminal profile.
 
-### Install OBSWebSocket
+### Install modules
+
+#### OBSWebSocket
 
 - Documentation: https://github.com/onyx-and-iris/OBSWebSocket-Powershell
 - Requests: https://github.com/obsproject/obs-websocket/blob/master/docs/generated/protocol.md#requests
@@ -82,6 +84,12 @@ Close PowerShell and launch PowerShell 7. You may wish to set this as the defaul
 
 ```
 Install-Module -Name OBSWebSocket -Scope CurrentUser
+```
+
+#### Other
+
+```
+Install-Module -Name UMN-Google -RequiredVersion 1.2.6
 ```
 
 ## Python
