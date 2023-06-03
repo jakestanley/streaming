@@ -14,6 +14,7 @@ Param(
 
 Import-Module OBSWebSocket
 Import-Module ./common.psm1
+Import-Module ./functions.psm1
 
 # declare functions here
 function GetMapNameString {
@@ -108,6 +109,43 @@ function RenameOutputFile {
     }
 }
 
+function RemoveLevelStatFile {
+    if (Test-Path -Path ".\levelstat.txt") {
+        Write-Debug "Found old levelstat.txt file. Deleting"
+        Remove-Item ".\levelstat.txt"
+    }
+}
+
+function WriteStats {
+    Param (
+        $Stats = $(throw "Stats argument missing"),
+        $DemoDir = $(throw "DemoDir argument missing"),
+        $DemoName = $(throw "DemoName argument missing")
+    )
+
+    $statsJsonPath = (Join-Path -Path $DemoDir -ChildPath ("{0}-STATS.json" -f $DemoName))
+    Write-Debug ("Stats will be written to: {0}" -f $statsJsonPath)
+
+    if (Test-Path -Path ".\levelstat.txt") {
+
+        Write-Debug "Found levelstat.txt. Writing level stats"
+        
+        $raw_level_stats = Get-Content ".\levelstat.txt" | Select-Object -First 1
+        # Archive (in case we need to debug stats later)
+        if (Test-Path -Path ".\tmp"){
+            # do nothing
+        } else {
+            New-Item -ItemType Directory -Path ".\tmp"
+        }
+        $archivedLevelStatTxt = (".\tmp\levelstat_{0}.txt" -f $DemoName)
+        $Stats.levelStats = ParseLevelStats($raw_level_stats)
+        Write-Debug ("Moving `n`t'levelstat.txt' to `n`t'{0}'" -f $archivedLevelStatTxt)
+        Rename-Item -Path ".\levelstat.txt" -NewName $archivedLevelStatTxt
+    }
+
+    $Stats | ConvertTo-Json | Out-File $statsJsonPath
+}
+
 # script begins in earnest
 $json = Get-Content $ConfigPath -Raw
 $config = ConvertFrom-Json $json
@@ -120,6 +158,14 @@ $chocolatedoom_cfg_extra=$config.chocolatedoom_cfg_extra
 $iwad_dir=$config.iwad_dir
 $pwad_dir=$config.pwad_dir
 $demo_dir=$config.demo_dir
+
+$stats = [PSCustomObject]@{
+    map         = ""
+    compLevel   = 0
+    sourcePort  = ""
+    args        = ""
+    levelStats  = $null
+}
 
 if ($NoObs) {
     Write-Host "OBS will NOT be controlled"
@@ -188,6 +234,8 @@ try {
         Write-Error "Could not parse Map value: '$map.Map'"
     }
 
+    $stats.map = $map.Map
+
     $p = GetPatches $pwad_dir $map.Files $map.Merge
     $dehs = $p.Dehs
     $pwads = $p.Pwads
@@ -244,9 +292,11 @@ try {
 
         if ($Crispy) {
             Write-Debug "Starting crispy-doom with the following arguments:"
+            $stats.sourcePort = "crispy-doom"
             $executable = $config.crispydoom_path
         } else {
             Write-Debug "Starting chocolate-doom with the following arguments:"
+            $stats.sourcePort = "chocolate-doom"
             $executable = $chocolatedoom_path
         }
 
@@ -257,15 +307,20 @@ try {
         if ($complevel -ne "") {
             $dargs.AddRange(@("-complevel", $complevel))
         }
+        $stats.compLevel = $complevel
         
-        $dargs.Add("-window")
+        $dargs.AddRange(@("-window", "-levelstat"))
         Write-Debug "Starting dsda-doom with the following arguments:"
+        $stats.sourcePort = "dsda-doom"
         $executable = $dsda_path
     }
 
+    $stats.args = $dargs
     foreach($arg in $dargs) {
         Write-Debug `t`t$arg
     }
+
+    RemoveLevelStatFile
     Start-Sleep 3
 
     ${r_client}?.SetCurrentProgramScene("Playing")
@@ -273,6 +328,8 @@ try {
     Start-Process -FilePath $executable -ArgumentList $dargs -Wait
     ($ReRecord -or $AutoRecord) ? ($r_output = ${r_client}?.StopRecord()) : $null
     ${r_client}?.SetCurrentProgramScene("Waiting")
+
+    WriteStats $stats $demo_dir $demo_name
 
     if ($r_output) {
         RenameOutputFile $r_output.outputPath $demo_name
