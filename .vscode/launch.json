@@ -34,6 +34,12 @@
             "request": "launch",
             "script": "${workspaceFolder}/analyse.ps1",
             "args": ["-ConfigPath", "./config-mac.json", "-Debug"]
+        }, {
+            "name": "Tests: Debug",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/test.ps1",
+            "args": ["-Debug"]
         }
     ]
 }
