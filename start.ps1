@@ -139,8 +139,12 @@ function WriteStats {
         }
         $archivedLevelStatTxt = (".\tmp\levelstat_{0}.txt" -f $DemoName)
         $Stats.levelStats = ParseLevelStats($raw_level_stats)
+
         Write-Debug ("Moving `n`t'levelstat.txt' to `n`t'{0}'" -f $archivedLevelStatTxt)
-        Rename-Item -Path ".\levelstat.txt" -NewName $archivedLevelStatTxt
+        Move-Item -Path ".\levelstat.txt" $archivedLevelStatTxt
+    } else {
+
+        Write-Debug "No levelstat.txt found. I assume you didn't finish the level"
     }
 
     $Stats | ConvertTo-Json | Out-File $statsJsonPath
