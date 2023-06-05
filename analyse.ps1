@@ -17,7 +17,16 @@ foreach ($map in $csvData) {
     $p = GetPatches $cfg.pwad_dir $map.Files $map.Merge
     $demo_prefix = [System.IO.Path]::GetFileNameWithoutExtension($p.Pwads[0])
     $demo_prefix += ("-{0}" -f $map.Map)
-    $demos_for_map = Get-ChildItem -Path $cfg.demo_dir -Filter ("{0}*" -f $demo_prefix)
+    $demos_for_map = Get-ChildItem -Path $cfg.demo_dir -Filter ("{0}*.lmp" -f $demo_prefix)
+    
+    $stat_files_for_map = Get-ChildItem -Path $cfg.demo_dir -Filter ("{0}*.json" -f $demo_prefix) | Select-Object -ExpandProperty FullName
+    
+    $stats_for_map = @()
+    foreach ($stat_file in $stat_files_for_map) {
+        $stats_for_map += Get-Content -Path $stat_file -Raw | ConvertFrom-Json
+    }
+
+    # TODO add date
     if ($demos_for_map.Count -gt 0) {
         $table_rows += [PSCustomObject]@{
             Map = $map.Title
