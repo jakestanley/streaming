@@ -145,7 +145,7 @@ function WriteStats {
         Move-Item -Path ".\levelstat.txt" $archivedLevelStatTxt
     } else {
 
-        Write-Debug "No levelstat.txt found. I assume you didn't finish the level"
+        Write-Debug "No levelstat.txt found. I assume you didn't finish the level or aren't using dsda-doom"
     }
 
     $Stats | ConvertTo-Json | Out-File $statsJsonPath
@@ -175,20 +175,6 @@ $stats = [PSCustomObject]@{
 if ($NoObs) {
     Write-Host "OBS will NOT be controlled"
 }
-
-if ($SourcePort) {
-    Write-Host ("Overriding with source port '{0}'" -f $SourcePort)
-}
-
-Write-Debug "Configuration:"
-Write-Debug "`tdefault_complevel: $default_complevel"
-Write-Debug "`tdsda_path: $dsda_path"
-Write-Debug "`tchocolatedoom_path: $chocolatedoom_path"
-Write-Debug "`tchocolatedoom_cfg_default: $chocolatedoom_cfg_default"
-Write-Debug "`tchocolatedoom_cfg_extra: $chocolatedoom_cfg_extra"
-Write-Debug "`tiwad_dir: $iwad_dir"
-Write-Debug "`tpwad_dir: $pwad_dir"
-Write-Debug "`tdemo_dir: $demo_dir"
 
 try {
 
@@ -286,38 +272,53 @@ try {
     }
 
     # if the port must be chocolate doom or we have overridden to use chocolate doom (support for more later)
-    $SourcePort = ($SourcePort -ne "") ? $SourcePort : $map.Port
-    Write-Debug $SourcePort
     if ($SourcePort -ne "") {
-
-        if ($mwads.Count -gt 0) {
-            $dargs.Add("-merge")
-            $dargs.AddRange($mwads)
-        }
-
-        if ($Crispy) {
-            Write-Debug "Starting crispy-doom with the following arguments:"
-            $stats.sourcePort = "crispy-doom"
-            $executable = $config.crispydoom_path
-        } else {
-            Write-Debug "Starting chocolate-doom with the following arguments:"
-            $stats.sourcePort = "chocolate-doom"
-            $executable = $chocolatedoom_path
-        }
-
-        $dargs.AddRange(@("-config", $chocolatedoom_cfg_default, "-extraconfig", $chocolatedoom_cfg_extra))
+        Write-Host ("Overriding with source port '{0}'" -f $SourcePort)
     } else {
+        Write-Debug ("Using source port '{0}'" -f $map.Port)
+        $SourcePort = $map.Port
+    }
 
-        $complevel = $map.CompLevel -replace '^$', $default_complevel
-        if ($complevel -ne "") {
-            $dargs.AddRange(@("-complevel", $complevel))
+    # TODO: use regexes for fuzzy matching - https://stackoverflow.com/a/3495262
+    $stats.sourcePort = $SourcePort
+    switch ($SourcePort) {
+        chocolate {
+            # TODO put this in a function (may require reworking into an object)
+            if ($mwads.Count -gt 0) {
+                $dargs.Add("-merge")
+                $dargs.AddRange($mwads)
+            }
+
+            if ($Crispy) {
+                Write-Debug "Starting crispy-doom with the following arguments:"
+                $stats.sourcePort = "crispy-doom"
+                $executable = $config.crispydoom_path
+            } else {
+                Write-Debug "Starting chocolate-doom with the following arguments:"
+                $stats.sourcePort = "chocolate-doom"
+                $executable = $chocolatedoom_path
+            }
+
+            $dargs.AddRange(@("-config", $chocolatedoom_cfg_default, "-extraconfig", $chocolatedoom_cfg_extra))
         }
-        $stats.compLevel = $complevel
-        
-        $dargs.AddRange(@("-window", "-levelstat"))
-        Write-Debug "Starting dsda-doom with the following arguments:"
-        $stats.sourcePort = "dsda-doom"
-        $executable = $dsda_path
+        gzdoom {
+            # TODO put this in a function (may require reworking into an object)
+
+            $executable = $config.gzdoom_path
+            $dargs.AddRange(@("-config", $config.gzdoom_cfg.path))
+        }
+        default {
+            # TODO put this in a function (may require reworking into an object)
+            $complevel = $map.CompLevel -replace '^$', $default_complevel
+            if ($complevel -ne "") {
+                $dargs.AddRange(@("-complevel", $complevel))
+            }
+            $stats.compLevel = $complevel
+            
+            $dargs.AddRange(@("-window", "-levelstat"))
+            Write-Debug "Starting dsda-doom with the following arguments:"
+            $executable = $dsda_path
+        }
     }
 
     $stats.args = $dargs

@@ -1,6 +1,11 @@
 {
 	"default_complevel": "9",
 	"dsda_path": "G:\\Games\\dsda-doom-0.25.6\\dsda-doom.exe",
+	"gzdoom_path": "C:\\Users\\mail\\opt\\gzdoom-4-10-0\\gzdoom.exe",
+	"gzdoom_cfg": {
+		"name": "Pureish",
+		"path": "D:\\Dropbox\\Games\\Doom\\Configs\\gzdoom\\gzdoom-pureish.ini"
+	},
 	"chocolatedoom_path": "C:\\Users\\mail\\opt\\chocolate-doom\\chocolate-doom.exe",
 	"chocolatedoom_cfg_default": "D:\\Dropbox\\Games\\Doom\\Configs\\chocolate\\default.cfg",
 	"chocolatedoom_cfg_extra": "D:\\Dropbox\\Games\\Doom\\Configs\\chocolate\\chocolate-doom.cfg",
