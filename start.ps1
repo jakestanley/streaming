@@ -1,6 +1,7 @@
 #!/usr/bin/env pwsh
 Param(
     [switch] [Parameter(HelpMessage="OBS control will be disabled")] $NoObs,
+    [string] [Parameter(HelpMessage="Which scene should OBS switch to when game starts")] $PlayScene = "Playing",
     [switch] [Parameter(HelpMessage="Re-record a completed demo")] $ReRecord,
     [switch] [Parameter(HelpMessage="Automatically record and stop when gameplay ends")] $AutoRecord,
     [switch] [Parameter(HelpMessage="Play a random map")] $Random,
@@ -9,7 +10,7 @@ Param(
     [switch] [Parameter(HelpMessage="If saved, play last map")] $Last,
     [string] [Parameter(HelpMessage="Override source port")] $SourcePort,
     [string] [Parameter(HelpMessage="Path to configuration file")] $ConfigPath = ".\config.json",
-    [string] [Parameter(HelpMessage="Path to maps CSV file")] $CsvFilePath = ".\Season1.csv"
+    [string] [Parameter(HelpMessage="Path to maps CSV file")] $CsvFilePath = (".\Season1.csv")
 )
 
 Import-Module OBSWebSocket
@@ -327,7 +328,7 @@ try {
     RemoveLevelStatFile
     Start-Sleep 3
 
-    ${r_client}?.SetCurrentProgramScene("Playing")
+    ${r_client}?.SetCurrentProgramScene($PlayScene)
     $ReRecord ? (${r_client}?.StartRecord()) : $null
     Start-Process -FilePath $executable -ArgumentList $dargs -Wait
     ($ReRecord -or $AutoRecord) ? ($r_output = ${r_client}?.StopRecord()) : $null
