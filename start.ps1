@@ -261,7 +261,7 @@ try {
     }
 
     # set the name of the demo. this format is subject to change
-    $time= (Get-Date).ToString("yyyy-MM-ddTHmmss")
+    $time= (Get-Date).ToString("yyyy-MM-ddTHHmmss")
     $demo_name = "{0}-{1}-{2}" -f $demo_prefix, $map.Map, $time
 
     # record the demo
