@@ -199,6 +199,11 @@ try {
 
     if (!$map) {
         Write-Error "A map was not selected"
+        $r_output = ${r_client}?.StopRecord()
+        if ($r_output) {
+            Start-Sleep(3)
+            Remove-Item $r_output.outputPath
+        }
         Exit 1
     }
 

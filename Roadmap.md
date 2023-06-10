@@ -7,4 +7,3 @@
 
 # Bugs
 
-- if a map is not selected, the program errors and the recording continues
