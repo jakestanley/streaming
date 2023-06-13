@@ -249,10 +249,12 @@ try {
     }
 
     # Set map title in OBS
+    $textMapName = ($map.Title -eq "" ? $map.Map : $map.Title) + " - " + $map.Author
+    Write-Debug ("Title: '{0}'" -f $textMapName)
     ${r_client}?.Call("SetInputSettings", @{
-        inputName = "Text"
+        inputName = "Text Map Name"
         inputSettings = @{
-            text = $map.Title + " - " + $map.Author
+            text = $textMapName
         }
     })
 
