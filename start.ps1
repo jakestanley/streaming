@@ -1,6 +1,7 @@
 #!/usr/bin/env pwsh
 Param(
     [switch] [Parameter(HelpMessage="OBS control will be disabled")] $NoObs,
+    [switch] [Parameter(HelpMessage="Disable QoL mods (use this if you are experiencing issues)")] $NoQoL,
     [string] [Parameter(HelpMessage="Which scene should OBS switch to when game starts")] $PlayScene = "Playing",
     [switch] [Parameter(HelpMessage="Re-record a completed demo")] $ReRecord,
     [switch] [Parameter(HelpMessage="Automatically record and stop when gameplay ends")] $AutoRecord,
@@ -246,6 +247,9 @@ try {
         $demo_prefix = [System.IO.Path]::GetFileNameWithoutExtension($pwads[0])
         $dargs.Add("-file")
         $dargs.AddRange($pwads)
+        if (!$NoQoL) {
+            $dargs.AddRange($config.qol_mods)
+        }
     }
 
     # Set map title in OBS

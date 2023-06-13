@@ -11,5 +11,9 @@
 	"chocolatedoom_cfg_extra": "D:\\Dropbox\\Games\\Doom\\Configs\\chocolate\\chocolate-doom.cfg",
 	"iwad_dir": "D:\\Dropbox\\Games\\Doom\\WADs\\IWADs",
 	"pwad_dir": "D:\\Dropbox\\Games\\Doom\\WADs\\Maps",
+	"qol_mods": [
+		"D:\\Dropbox\\Games\\Doom\\WADs\\Mods\\vsmooth\\vsmooth.wad",
+		"D:\\Dropbox\\Games\\Doom\\WADs\\Mods\\D3_PLASMA.wad"
+	],
 	"demo_dir": "D:\\Dropbox\\Games\\Doom\\Demos"
 }
