@@ -1,3 +1,22 @@
+function GetPwads {
+    param (
+        $PwadDir,
+        $MapFiles
+    )
+
+    $pwads = @()
+    foreach($patch in $MapFiles.Split("|")) {
+        $fileExtension = [System.IO.Path]::GetExtension($patch).ToLower()
+        if($fileExtension -like "*.wad") {
+            $pwads += Join-Path -Path $PwadDir -ChildPath $patch
+        } else {
+            # ignore file
+        }
+    }
+
+    return $pwads
+}
+
 function GetPatches {
     param (
         $PwadDir,
@@ -36,3 +55,4 @@ function GetPatches {
 }
 
 Export-ModuleMember -Function GetPatches
+Export-ModuleMember -Function GetPwads

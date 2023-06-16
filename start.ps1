@@ -11,12 +11,14 @@ Param(
     [switch] [Parameter(HelpMessage="If saved, play last map")] $Last,
     [string] [Parameter(HelpMessage="Override source port")] $SourcePort,
     [string] [Parameter(HelpMessage="Path to configuration file")] $ConfigPath = ".\config.json",
-    [string] [Parameter(HelpMessage="Path to maps CSV file")] $CsvFilePath = (".\Season1.csv")
+    [string] [Parameter(HelpMessage="WAD list (not supported if wad-ls isn't on PATH). Overrides MapListCsv")] $ModListCsv,
+    [string] [Parameter(HelpMessage="Map list")] $MapListCsv = (".\Season1.csv")
 )
 
 Import-Module OBSWebSocket
 Import-Module ./common.psm1
 Import-Module ./functions.psm1
+Import-Module ./wad.psm1
 
 # declare functions here
 function GetMapNameString {
@@ -30,6 +32,7 @@ function GetMapSelection {
     param (
         $Maps = $(throw "Maps argument missing")
     )
+
     if ($Last) {
         if (Test-Path -Path ".\last.json") {
             $lastmap = Get-Content ".\last.json" -Raw | ConvertFrom-Json
@@ -183,13 +186,18 @@ try {
     $r_client = $NoObs ? $null : (Get-OBSRequest -hostname "localhost" -port 4455)
     ${r_client}?.SetCurrentProgramScene("Waiting")
 
-    # load maps from CSV
-    $csvData = Import-Csv $CsvFilePath
-
-    $maps = @()
-    foreach ($row in $csvData) {
-        $maps += $row
+    # load maps from CSVs
+    if ($ModListCsv -and (Get-Command wad-ls -ErrorAction SilentlyContinue)) {
+        $csvData = Import-Csv $ModListCsv
+        $maps = GetMapsFromModList $csvData
+    } else {
+        $maps = @()
+        $csvData = Import-Csv $MapListCsv
+        foreach ($row in $csvData) {
+            $maps += $row
+        }
     }
+    
 
     $AutoRecord ? (${r_client}?.StartRecord()) : $null
     if ($Random) {
