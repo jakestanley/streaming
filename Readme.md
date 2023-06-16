@@ -174,7 +174,7 @@ foreach ($file in (Get-ChildItem "." -Filter *.mkv)) {
 
 # Optional functionality
 
-- [maghoff/wad](https://github.com/maghoff/wad) for reading wad data
+- [maghoff/wad](https://github.com/maghoff/wad) for reading wad data (requires [rust](https://doc.rust-lang.org/cargo/getting-started/installation.html))
 
 # Thanks
 
