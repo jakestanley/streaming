@@ -172,6 +172,10 @@ foreach ($file in (Get-ChildItem "." -Filter *.mkv)) {
 }
 ```
 
+# Optional functionality
+
+- [maghoff/wad](https://github.com/maghoff/wad) for reading wad data
+
 # Thanks
 
 ## ChatGPT
