@@ -190,6 +190,7 @@ try {
     if ($ModListCsv -and (Get-Command wad-ls -ErrorAction SilentlyContinue)) {
         $csvData = Import-Csv $ModListCsv
         $maps = GetMapsFromModList $csvData
+        Write-Debug "got maps"
     } else {
         $maps = @()
         $csvData = Import-Csv $MapListCsv

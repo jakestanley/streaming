@@ -31,6 +31,19 @@
             ]
         },
         {
+            "name": "Start (Mac): Debug, NoObs, NoDemo, ModList",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/start.ps1",
+            "args": [
+                "-ConfigPath", "./config-mac.json", 
+                "-ModListCsv", "./ModListSeason1.csv",
+                "-Debug", 
+                "-NoDemo", 
+                "-NoObs"
+            ]
+        },
+        {
             "name": "Start (Mac): Debug, NoObs",
             "type": "PowerShell",
             "request": "launch",
