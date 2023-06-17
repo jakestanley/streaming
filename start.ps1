@@ -186,13 +186,13 @@ try {
     $r_client = $NoObs ? $null : (Get-OBSRequest -hostname "localhost" -port 4455)
     ${r_client}?.SetCurrentProgramScene("Waiting")
 
+    $maps = @()
     # load maps from CSVs
     if ($ModListCsv -and (Get-Command wad-ls -ErrorAction SilentlyContinue)) {
         $csvData = Import-Csv $ModListCsv
         $maps = GetMapsFromModList $csvData
         Write-Debug "got maps"
     } else {
-        $maps = @()
         $csvData = Import-Csv $MapListCsv
         foreach ($row in $csvData) {
             $maps += $row

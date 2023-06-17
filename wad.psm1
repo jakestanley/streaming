@@ -1,9 +1,8 @@
 Import-Module ./common.psm1
 
 class Map {
-    [int]$Season
+    [string]$Season
     [int]$Ranking
-    [int]$PlayOrder
     [string]$Title
     [string]$Author
     [string]$Map
@@ -35,7 +34,6 @@ function GetMapsFromModList {
         $ModList
     )
 
-    $maps = [System.Collections.ArrayList]::new()
     foreach ($mod in $ModList) {
         $files = GetPwads $pwad_dir $mod.Files
         
@@ -44,31 +42,29 @@ function GetMapsFromModList {
             $wadentries = wad-ls $file
             $filemaps = [System.Collections.ArrayList]::new()
             foreach($entry in $wadentries) {
-                if ($entry -match "(E\dM\d|MAP\d\d|MAPINFO)$") {
+                if ($entry -match "(MAPINFO)$") {
+                    Write-Debug "Found MAPINFO entry"
+                    $filemaps = @()
+                    $mapinfo = wad-read $file "MAPINFO"
+                    # TODO parse MAPINFO wad-read output
+                    break
+                } elseif ($entry -match "(E\dM\d|MAP\d\d)$") {
                     foreach($key in $Matches.Keys){
                         if (!$filemaps.Contains($Matches[$key])) {
-                            $filemaps.Add($Matches[$key])
+                            # not doing this will cause the function to output the indexes.
+                            #  ffs this took ages to figure out
+                            [Void]$filemaps.Add($Matches[$key])
                         }
                     }
                 }
             }
-
-            if ($filemaps.Contains("MAPINFO")) {
-                $mapinfo = wad-read $file "MAPINFO"
-                Write-Debug "Found MAPINFO entry"
-            } else {
-                Write-Debug "No MAPINFO found. Will use MAP entries"
-                foreach($mapId in $filemaps) {
-                    # $mod
-                    $maps.Add([Map]::new($mod, $mapId))
-                }
+            
+            foreach($mapId in ($filemaps | Sort-Object)) {
+                $map = [Map]::new($mod, $mapId)
+                Write-Output $map
             }
         }
-
-        # TODO duplicate map data for resulting table
     }
-
-    return $maps
 }
 
 # TODO unit test lol
