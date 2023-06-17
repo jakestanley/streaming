@@ -31,6 +31,19 @@
             ]
         },
         {
+            "name": "Start: Debug, NoObs, NoDemo, ModList (MAPINFO test)",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/start.ps1",
+            "args": [
+                "-ConfigPath", "./config.json", 
+                "-ModListCsv", "./MapInfoTest.csv",
+                "-Debug", 
+                "-NoDemo", 
+                "-NoObs"
+            ]
+        },
+        {
             "name": "Start (Mac): Debug, NoObs, NoDemo, ModList",
             "type": "PowerShell",
             "request": "launch",

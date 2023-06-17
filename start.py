@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-from simple_term_menu import TerminalMenu
+from lib.arguments import *
+from lib.ui import *
+
 from datetime import datetime
 
 import obsws_python as obs
@@ -9,18 +11,16 @@ import re
 import os
 import time
 import subprocess
-import argparse
 
-def getMapNameString(map):
+def GetMapNameString(map):
     return f"#{map['Ranking']}: {map['Title']} | {map['Author']} | {map['Map']}"
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-sp", "--source-port", type=str, help="override source port")
-parser.add_argument("-rr", "--re-record", action='store_true', help="re-record a completed demo")
-parser.add_argument("-no", "--no-obs", action='store_true', help="disable OBS control")
-args = parser.parse_args()
+def GetMapSelection():
 
-_json = open('./config-mac.json') 
+
+args = get_args()
+
+_json = open(args.config) 
 config = json.load(_json) 
 
 obs = obs.ReqClient(host='localhost', port=4455, password='')
@@ -36,11 +36,7 @@ for row in _csv_reader:
     maps.append(row)
     options.append(getMapNameString(row))
 
-terminal_menu = TerminalMenu(options)
-index = terminal_menu.show()
-if index == None:
-    print("Nothing selected. Exiting")
-    exit(0)
+index = 0
 
 # default arguments
 args = []

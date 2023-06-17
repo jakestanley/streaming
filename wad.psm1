@@ -27,6 +27,49 @@ class Map {
         $this.CompLevel = $CsvRow.CompLevel
         $this.Map = $MapId
     }
+
+    Map([PSCustomObject]$CsvRow, [string]$MapId, [string]$MapTitle) {
+        $this.Season = $CsvRow.Season
+        $this.Ranking = $CsvRow.Ranking
+        $this.Title = $MapTitle
+        $this.Author = $CsvRow.Author
+        $this.IWAD = $CsvRow.IWAD
+        $this.Files = $CsvRow.Files
+        $this.Port = $CsvRow.Port
+        $this.Merge = $CsvRow.Merge
+        $this.CompLevel = $CsvRow.CompLevel
+        $this.Map = $MapId
+    }
+}
+
+function getMapEntries {
+    param (
+        $WadEntries
+    )
+
+    $mapEntries = @()
+    foreach($entry in $WadEntries) {
+        if ($entry -match "(E\dM\d|MAP\d\d|MAPINFO)$") {
+            $mapEntries += $Matches[1]
+        }
+    }
+    $mapEntries
+}
+
+function getMapsFromMapInfo {
+    param (
+        $mod, $file
+    )
+
+    Write-Debug "Found MAPINFO entry"
+    $mapinfo = wad-read $file "MAPINFO"
+    foreach($entry in $mapinfo) {
+        if($entry -match "(E\dM\d|MAP\d\d) ""(.*)""$"){
+            $mapId = $Matches[1]
+            $mapTitle = $Matches[2]
+            Write-Output [Map]::new($mod, $mapId, $mapTitle)
+        }
+    }
 }
 
 function GetMapsFromModList {
@@ -39,29 +82,14 @@ function GetMapsFromModList {
         
         foreach ($file in $files) {
             # TODO: cache this info. use shasum or something
-            $wadentries = wad-ls $file
-            $filemaps = [System.Collections.ArrayList]::new()
-            foreach($entry in $wadentries) {
-                if ($entry -match "(MAPINFO)$") {
-                    Write-Debug "Found MAPINFO entry"
-                    $filemaps = @()
-                    $mapinfo = wad-read $file "MAPINFO"
-                    # TODO parse MAPINFO wad-read output
-                    break
-                } elseif ($entry -match "(E\dM\d|MAP\d\d)$") {
-                    foreach($key in $Matches.Keys){
-                        if (!$filemaps.Contains($Matches[$key])) {
-                            # not doing this will cause the function to output the indexes.
-                            #  ffs this took ages to figure out
-                            [Void]$filemaps.Add($Matches[$key])
-                        }
-                    }
+            $wadEntries = (wad-ls $file)
+            $mapEntries = getMapEntries $wadEntries
+            if (${mapEntries}?.Contains("MAPINFO")) {
+                Write-Output getMapsFromMapInfo $mod $file
+            } else {
+                foreach($map in $mapEntries) {
+                    Write-Output [Map]::new($mod, $map)
                 }
-            }
-            
-            foreach($mapId in ($filemaps | Sort-Object)) {
-                $map = [Map]::new($mod, $mapId)
-                Write-Output $map
             }
         }
     }
