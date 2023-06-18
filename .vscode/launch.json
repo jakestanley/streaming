@@ -10,8 +10,8 @@
             "request": "launch",
             "program": "start.py",
             "args": [
-                "--config", "./config-mac.json",
-                "--map-list", "./Season1.csv",
+                "--config", "./examples/config-mac.json",
+                "--map-list", "./examples/Season1.csv",
                 "--no-obs",
                 "--no-demo"
             ]
@@ -22,8 +22,8 @@
             "request": "launch",
             "program": "start.py",
             "args": [
-                "--config", "./config-mac.json",
-                "--mod-list", "./Sunlust.csv",
+                "--config", "./examples/config-mac.json",
+                "--mod-list", "./examples/Sunlust.csv",
                 "--no-obs",
                 "--no-demo"
             ]
@@ -34,8 +34,8 @@
             "request": "launch",
             "program": "start.py",
             "args": [
-                "--config", "./config-mac.json",
-                "--mod-list", "./ModListSeason1.csv",
+                "--config", "./examples/config-mac.json",
+                "--mod-list", "./examples/ModListSeason1.csv",
                 "--no-obs",
                 "--no-demo"
             ]
@@ -46,8 +46,8 @@
             "request": "launch",
             "script": "${workspaceFolder}/start.ps1",
             "args": [
-                "-ConfigPath", "./config.json", 
-                "-MapListCsv", "./Jokes.csv", 
+                "-ConfigPath", "./examples/config.json", 
+                "-MapListCsv", "./examples/Jokes.csv", 
                 "-Debug", 
                 "-NoDemo", 
                 "-NoObs"
@@ -59,8 +59,8 @@
             "request": "launch",
             "script": "${workspaceFolder}/start.ps1",
             "args": [
-                "-ConfigPath", "./config.json", 
-                "-ModListCsv", "./ModListSeason1.csv",
+                "-ConfigPath", "./examples/config.json", 
+                "-ModListCsv", "./examples/ModListSeason1.csv",
                 "-Debug", 
                 "-NoDemo", 
                 "-NoObs"
@@ -72,8 +72,8 @@
             "request": "launch",
             "script": "${workspaceFolder}/start.ps1",
             "args": [
-                "-ConfigPath", "./config.json", 
-                "-ModListCsv", "./MapInfoTest.csv",
+                "-ConfigPath", "./examples/config.json", 
+                "-ModListCsv", "./examples/MapInfoTest.csv",
                 "-Debug", 
                 "-NoDemo", 
                 "-NoObs"
@@ -85,8 +85,8 @@
             "request": "launch",
             "script": "${workspaceFolder}/start.ps1",
             "args": [
-                "-ConfigPath", "./config-mac.json", 
-                "-ModListCsv", "./ModListSeason1.csv",
+                "-ConfigPath", "./examples/config-mac.json", 
+                "-ModListCsv", "./examples/ModListSeason1.csv",
                 "-Debug", 
                 "-NoDemo", 
                 "-NoObs"
@@ -97,31 +97,31 @@
             "type": "PowerShell",
             "request": "launch",
             "script": "${workspaceFolder}/start.ps1",
-            "args": ["-ConfigPath", "./config-mac.json", "-Debug", "-NoObs"]
+            "args": ["-ConfigPath", "./examples/config-mac.json", "-Debug", "-NoObs"]
         }, {
             "name": "Start (Mac): Debug, NoObs, NoDemo",
             "type": "PowerShell",
             "request": "launch",
             "script": "${workspaceFolder}/start.ps1",
-            "args": ["-ConfigPath", "./config-mac.json", "-Debug", "-NoObs", "-NoDemo"]
+            "args": ["-ConfigPath", "./examples/config-mac.json", "-Debug", "-NoObs", "-NoDemo"]
         }, {
             "name": "Start (Mac): Debug, NoObs, ReRecord",
             "type": "PowerShell",
             "request": "launch",
             "script": "${workspaceFolder}/start.ps1",
-            "args": ["-ConfigPath", "./config-mac.json", "-Debug", "-NoObs", "-ReRecord"]
+            "args": ["-ConfigPath", "./examples/config-mac.json", "-Debug", "-NoObs", "-ReRecord"]
         }, {
             "name": "Start (Mac): Debug, Random, NoObs, NoDemo",
             "type": "PowerShell",
             "request": "launch",
             "script": "${workspaceFolder}/start.ps1",
-            "args": ["-ConfigPath", "./config-mac.json", "-Debug", "-NoObs", "-Random", "-NoDemo"]
+            "args": ["-ConfigPath", "./examples/config-mac.json", "-Debug", "-NoObs", "-Random", "-NoDemo"]
         }, {
             "name": "Analyse (Mac): Debug",
             "type": "PowerShell",
             "request": "launch",
             "script": "${workspaceFolder}/analyse.ps1",
-            "args": ["-ConfigPath", "./config-mac.json", "-Debug"]
+            "args": ["-ConfigPath", "./examples/config-mac.json", "-Debug"]
         }, {
             "name": "Tests: Debug",
             "type": "PowerShell",
