@@ -23,7 +23,10 @@ class ObsController:
             # TODO don't forget to save the recording name so we can move it later
 
     def SetScene(self, title):
-        self.obs_client.set_current_program_scene(title)
+        if self.enabled:
+            self.obs_client.set_current_program_scene(title)
+        else:
+            print(f"OBS is disabled. Title provided: '{title}'")
 
     def UpdateMapTitle(self, title):
         settings = {}
