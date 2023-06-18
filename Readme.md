@@ -88,11 +88,17 @@ Install-Module -Name OBSWebSocket -Scope CurrentUser
 
 ### Install dependencies
 
-- obsws-python
-- [simple-term-menu](https://pypi.org/project/simple-term-menu/)
+```
+pip install -r requirements.txt
+```
+
+## Testing
+
+Run any scripts in `lib/py` or `lib/ps` with the `test_` prefix
+I intend to add more tests later excepting UI tests.
 
 ```
-pip install -U obsws-python simple-term-menu
+lib/py/test_*.py
 ```
 
 ## Scripting OBS

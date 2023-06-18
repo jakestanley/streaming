@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+print("Running stats.py tests...")
+
 from stats import *
 
 input1 = "E1M1 - 0:09.80 (0:09)  K: 2/2  I: 2/7  S: 1/1"
@@ -13,3 +15,5 @@ assert actual1["Time"] == "0:09.80", f"Time was {actual1['Time']}"
 assert actual1["Kills"] == "2/2", f"Kills was {actual1['Kills']}"
 assert actual1["Items"] == "2/7", f"Items was {actual1['Items']}"
 assert actual1["Secrets"] == "1/1", f"Secrets was {actual1['Secrets']}"
+
+print("OK")

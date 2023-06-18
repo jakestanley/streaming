@@ -123,10 +123,10 @@
             "script": "${workspaceFolder}/analyse.ps1",
             "args": ["-ConfigPath", "./examples/config-mac.json", "-Debug"]
         }, {
-            "name": "Tests: Debug",
+            "name": "PS Test: functions",
             "type": "PowerShell",
             "request": "launch",
-            "script": "${workspaceFolder}/test.ps1",
+            "script": "${workspaceFolder}/lib/ps/test_functions.ps1",
             "args": ["-Debug"]
         }
     ]
