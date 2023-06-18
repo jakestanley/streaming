@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 from lib.arguments import *
 from lib.ui import *
+from lib.obs import *
+from lib.wad import *
+from lib.patches import *
 
 from datetime import datetime
 
-import obsws_python as obs
 import json
 import csv
 import re
@@ -12,42 +14,62 @@ import os
 import time
 import subprocess
 
+p_args = get_args()
+
+def GetLastMap():
+    if(p_args.last):
+        # TODO check if file exists
+        # TODO save last map on complete
+        return open("./last.json")
+    return None
+
+def GetMaps():
+    if(p_args.mod_list):
+        _csv = open(p_args.mod_list)
+        return GetMapsFromModList(csv.DictReader(_csv), config['pwad_dir'])
+    elif(p_args.map_list):
+        _csv = open(p_args.map_list)
+        return csv.DictReader(_csv)
+    else:
+        # TODO exception? proper error? throw?
+        print("Error. No map source could be obtained. Maybe I'll just launch Doom?")
+        exit(1)
+
 def GetMapNameString(map):
     return f"#{map['Ranking']}: {map['Title']} | {map['Author']} | {map['Map']}"
 
-def GetMapSelection():
+def GetMapSelection(maps):
+    if (p_args.last):
+        open("./last.json")
+        # TODO: load last map
+    else:
+        return OpenMapSelection(maps)
 
-
-args = get_args()
-
-_json = open(args.config) 
+_json = open(p_args.config) 
 config = json.load(_json) 
 
-obs = obs.ReqClient(host='localhost', port=4455, password='')
-scenes = obs.get_scene_list()
-obs.set_current_program_scene('Waiting')
+obsController = ObsController(not p_args.no_obs)
+obsController.Setup()
 
-_csv = open("./Season1.csv")
-_csv_reader = csv.DictReader(_csv)
+map = GetLastMap()
+if(not map):
+    maps = GetMaps()
+    map = GetMapSelection(maps)
 
-maps = []
-options = []
-for row in _csv_reader:
-    maps.append(row)
-    options.append(getMapNameString(row))
+if(not map):
+    print("no map was selected")
+    exit(1)
 
-index = 0
-
-# default arguments
-args = []
-complevel = maps[index]['CompLevel'] or config['default_complevel']
-args.extend(['-nomusic', '-skill', '4'])
+# set default doom arguments
+doom_args = []
+complevel = map['CompLevel'] or config['default_complevel']
+doom_args.extend(['-nomusic', '-skill', '4'])
 
 # default
 demo_prefix = ""
 demo_name = ""
 
-mapId = maps[index]['Map']
+mapId = map['Map']
 DOOM_regex=r'^E(\d)M(\d)$'
 DOOM2_regex=r'^MAP(\d+)$'
 
@@ -56,74 +78,58 @@ if re.match(DOOM_regex, mapId):
     demo_prefix="DOOM" # default just in case no pwad is provided
     episodeno = (re.match(DOOM_regex, mapId).group(1))
     mapno =     (re.match(DOOM_regex, mapId).group(2))
-    args.extend(['-warp', episodeno, mapno])
-    args.extend(['-iwad', f"{config['iwad_dir']}/DOOM.wad"])
-elif re.match(DOOM2_regex, maps[index]['Map']):
+    doom_args.extend(['-warp', episodeno, mapno])
+    doom_args.extend(['-iwad', f"{config['iwad_dir']}/DOOM.wad"])
+elif re.match(DOOM2_regex, map['Map']):
     print("Detected a Doom II map string")
     demo_prefix="DOOM2" # default just in case no pwad is provided
     mapno = (re.match(DOOM2_regex, mapId).group(1))
-    args.extend(['-warp', mapno])
-    args.extend(['-iwad', f"{config['iwad_dir']}/DOOM2.wad"])
+    doom_args.extend(['-warp', mapno])
+    doom_args.extend(['-iwad', f"{config['iwad_dir']}/DOOM2.wad"])
 else:
-    print(f"Could not parse Map value: {maps[index]['Map']}")
+    print(f"Could not parse Map value: {map['Map']}")
     exit(1)
 
-dehs = []
-pwads = []
-mwads = []
+patches = GetPatches(map, config['pwad_dir'])
 
-# build lists of map specific files we need to pass in
-patches = [patch for patch in maps[index]['Files'].split('|') if patch]
-for patch in patches:
-    ext = os.path.splitext(patch)[1]
-    if ext.lower() == ".deh":
-        dehs.append(f"{config['pwad_dir']}/{patch}")
-    elif ext.lower() == ".wad":
-        pwads.append(f"{config['pwad_dir']}/{patch}")
-    else:
-        print(f"Ignoring unsupported file "'{patch}'"with extension '{ext}'")
+if len(patches['dehs']) > 0:
+    doom_args.append("-deh")
+    doom_args.extend(patches['dehs'])
 
-# for chocolate doom/vanilla wad merge emulation
-merges = [merge for merge in maps[index]['Merge'].split('|') if merge]
-for merge in merges:
-    mwads.append(f"{config['pwad_dir']}/{merge}")
+if len(patches['pwads']) > 0:
+    doom_args.append("-file")
+    # use first pwad name as demo prefix
+    demo_prefix = os.path.splitext(os.path.basename(patches['pwads'][0]))[0]
+    doom_args.extend(patches['pwads'])
 
-if len(dehs) > 0:
-    args.append("-deh")
-    args.extend(dehs)
-
-if len(pwads) > 0:
-    args.append("-file")
-    demo_prefix = os.path.splitext(os.path.basename(pwads[0]))[0]
-    args.extend(pwads)
-
-# set map title in OBS (TODO)
-## SetInputSettings
-settings = {}
-settings['Text'] = maps[index]['Title']
-obs.set_input_settings("Text", settings=settings)
+obsController.UpdateMapTitle(map['Title'])
 
 # record the demo
-timestr = datetime.now().strftime("%Y-%m-%dT%H%M%S")
-args.append("-record")
-args.append(f"{config['demo_dir']}/{demo_prefix}-{mapId}-{timestr}.lmp")
+if (not config['no_demo']):
+    timestr = datetime.now().strftime("%Y-%m-%dT%H%M%S")
+    doom_args.append("-record")
+    doom_args.append(f"{config['demo_dir']}/{demo_prefix}-{mapId}-{timestr}.lmp")
 
-if maps[index]['Port'] == 'chocolate':
-    print("Starting chocolate-doom with the following arguments:")
-    if len(merges) > 0:
-        args.append("-merge")
-        args.extend(merges)
+if map['Port'] == 'chocolate':
+    if len(patches['merges']) > 0:
+        doom_args.append("-merge")
+        doom_args.extend(patches['merges'])
 
-    args.extend(["-config", config['chocolatedoom_cfg_default'], "-extraconfig", config['chocolatedoom_cfg_extra']])
-    executable = config['chocolatedoom_path']
+    doom_args.extend(["-config", config['chocolatedoom_cfg_default'], "-extraconfig", config['chocolatedoom_cfg_extra']])
+
+    if(config['crispy']):
+        executable = config['crispydoom_path']
+    else:
+        executable = config['chocolatedoom_path']
 else:
     print("Starting dsda-doom with the following arguments:")
-    args.extend(['-complevel', complevel, '-window'])
+    doom_args.extend(['-complevel', complevel, '-window'])
     executable = config['dsda_path']
 
 command = [executable]
-command.extend(args)
+command.extend(doom_args)
 
-obs.set_current_program_scene('Playing')
+obsController.SetScene('Playing')
 running = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-obs.set_current_program_scene('Waiting')
+# TODO stop recording and move file
+obsController.SetScene('Waiting')

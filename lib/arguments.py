@@ -12,8 +12,9 @@ def get_args():
     parser.add_argument("-nd", "--no-demo",     action='store_true',    help="Demo recording will be disabled")
     parser.add_argument("-cr", "--crispy",      action='store_true',    help="Use Crispy Doom instead of Chocolate Doom")
     parser.add_argument("-l",  "--last",        action='store_true',    help="If saved, play last map")
-    parser.add_argument("-c",  "--config",      type=str,               help="Path to configuration file", default=".\config.json")
-    parser.add_argument("-wl", "--wad-list",    type=str,               help="WAD list")
+    parser.add_argument("-c",  "--config",      type=str,               help="Path to script configuration file", default=".\config.json")
+    # TODO CONSIDER should we error if the user provides both?
+    parser.add_argument("-wl", "--mod-list",    type=str,               help="Mod list (overrides --map-list')")
     parser.add_argument("-ml", "--map-list",    type=str,               help="Map list")
 
     args = parser.parse_args()

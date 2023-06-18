@@ -1,32 +1,47 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableView
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableView, QMessageBox
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 
-def create_grid_view(data):
+class GridViewWindow(QMainWindow):
+    index_selected = pyqtSignal(int)
+
+    def __init__(self, data):
+        super().__init__()
+        self.model = QStandardItemModel()
+        self.table_view = QTableView(self)
+        self.table_view.setModel(self.model)
+        self.setCentralWidget(self.table_view)
+        self.resize(1920,1080)
+
+        # Create table headers based on keys in the first dictionary
+        headers = list(data[0].keys())
+        self.model.setHorizontalHeaderLabels(headers)
+
+        for row_dict in data:
+            row_items = [QStandardItem(str(row_dict[key])) for key in headers]
+            for item in row_items:
+                item.setEditable(False)  # Set the item as uneditable
+            self.model.appendRow(row_items)
+
+        self.table_view.doubleClicked.connect(self.handle_double_click)
+        self.table_view.resizeColumnsToContents()
+
+    def handle_double_click(self, index):
+        self.index_selected.emit(index.row())
+        self.close()  # Close the window
+
+def OpenMapSelection(data):
     app = QApplication([])
-    window = QMainWindow()
-    model = QStandardItemModel()
-    selected_index = -1
+    window = GridViewWindow(data)
+    selected = None
 
-    table_view = QTableView(window)
-    table_view.setModel(model)
-    window.setCentralWidget(table_view)
+    def handle_index_selected(index):
+        nonlocal selected
+        selected = data[index]
 
-    for row in data:
-        item = QStandardItem(row)
-        item.setEditable(False)
-        model.appendRow(item)
-
-    def handle_double_click(index):
-        selected_index = model.data(index, Qt.DisplayRole)
-        window.close()
-
-    table_view.doubleClicked.connect(handle_double_click)
+    window.index_selected.connect(handle_index_selected)
 
     window.show()
     app.exec_()
-    return selected_index
 
-# Example usage:
-data = ["Option 1", "Option 2", "Option 3"]
-print(create_grid_view(data))
+    return selected

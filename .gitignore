@@ -6,3 +6,4 @@
 *.png
 last.json
 tmp/
+__pycache__

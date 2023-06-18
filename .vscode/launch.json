@@ -5,6 +5,42 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Start (Mac, Python): Debug, NoObs, NoDemo, MapList",
+            "type": "python",
+            "request": "launch",
+            "program": "start.py",
+            "args": [
+                "--config", "./config-mac.json",
+                "--map-list", "./Season1.csv",
+                "--no-obs",
+                "--no-demo"
+            ]
+        },
+        {
+            "name": "Start (Mac, Python): Debug, NoObs, NoDemo, ModList (MAPINFO)",
+            "type": "python",
+            "request": "launch",
+            "program": "start.py",
+            "args": [
+                "--config", "./config-mac.json",
+                "--mod-list", "./Sunlust.csv",
+                "--no-obs",
+                "--no-demo"
+            ]
+        },
+        {
+            "name": "Start (Mac, Python): Debug, NoObs, NoDemo, ModList",
+            "type": "python",
+            "request": "launch",
+            "program": "start.py",
+            "args": [
+                "--config", "./config-mac.json",
+                "--mod-list", "./ModListSeason1.csv",
+                "--no-obs",
+                "--no-demo"
+            ]
+        },
+        {
             "name": "Start: Debug, NoObs, Jokes",
             "type": "PowerShell",
             "request": "launch",
