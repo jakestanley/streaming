@@ -16,9 +16,9 @@ Param(
 )
 
 Import-Module OBSWebSocket
-Import-Module ./common.psm1
-Import-Module ./functions.psm1
-Import-Module ./wad.psm1
+Import-Module ./lib/ps/common.psm1
+Import-Module ./lib/ps/functions.psm1
+Import-Module ./lib/ps/wad.psm1
 
 # declare functions here
 function GetMapNameString {

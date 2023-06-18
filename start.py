@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-from lib.arguments import *
-from lib.ui import *
-from lib.obs import *
-from lib.wad import *
-from lib.patches import *
+from lib.py.arguments import *
+from lib.py.ui import *
+from lib.py.obs import *
+from lib.py.wad import *
+from lib.py.patches import *
 
 from datetime import datetime
 
