@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 class GridViewWindow(QMainWindow):
     index_selected = pyqtSignal(int)
 
-    def __init__(self, data):
+    def __init__(self, data, column_order):
         super().__init__()
         self.model = QStandardItemModel()
         self.table_view = QTableView(self)
@@ -14,11 +14,10 @@ class GridViewWindow(QMainWindow):
         self.resize(1920,1080)
 
         # Create table headers based on keys in the first dictionary
-        headers = list(data[0].keys())
-        self.model.setHorizontalHeaderLabels(headers)
+        self.model.setHorizontalHeaderLabels(column_order)
 
         for row_dict in data:
-            row_items = [QStandardItem(str(row_dict[key])) for key in headers]
+            row_items = [QStandardItem(str(row_dict[key])) for key in column_order]
             for item in row_items:
                 item.setEditable(False)  # Set the item as uneditable
             self.model.appendRow(row_items)
@@ -32,7 +31,8 @@ class GridViewWindow(QMainWindow):
 
 def OpenMapSelection(data):
     app = QApplication([])
-    window = GridViewWindow(data)
+    column_order = ['Season', 'Ranking', 'Title', 'Map', 'MapName', 'IWAD', 'Files', 'Merge', 'Port', 'CompLevel', 'Doom wiki', 'Notes']
+    window = GridViewWindow(data, column_order)
     selected = None
 
     def handle_index_selected(index):
