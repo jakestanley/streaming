@@ -54,7 +54,11 @@ obsController.Setup()
 map = GetLastMap()
 if(not map):
     maps = GetMaps()
-    map = GetMapSelection(maps)
+    if(p_args.random):
+        import random
+        map = random.choice(maps)
+    else:
+        map = GetMapSelection(maps)
 
 if(not map):
     print("no map was selected")
@@ -106,6 +110,7 @@ obsController.UpdateMapTitle(map['Title'])
 
 # record the demo
 if (not config['no_demo']):
+    # TODO may need to use for other stuff so consider moving it out of this block?
     timestr = datetime.now().strftime("%Y-%m-%dT%H%M%S")
     doom_args.append("-record")
     doom_args.append(f"{config['demo_dir']}/{demo_prefix}-{mapId}-{timestr}.lmp")
