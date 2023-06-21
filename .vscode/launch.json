@@ -35,9 +35,20 @@
             "program": "start.py",
             "args": [
                 "--config", "./examples/config-mac.json",
-                "--mod-list", "./examples/ModListSeason1.csv",
+                "--mod-list", "./examples/ModList_Season1.csv",
                 "--no-obs",
                 "--no-demo"
+            ]
+        },
+        {
+            "name": "Python",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/start.py",
+            "args": [
+                "--config", "./examples/config.json", 
+                "--mod-list", "./examples/ModList_Season1.csv",
+                "--auto-record"
             ]
         },
         {

@@ -2,6 +2,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QTableView, QMessageBox
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtCore import Qt, pyqtSignal
 
+from lib.py.common import *
+
 class GridViewWindow(QMainWindow):
     index_selected = pyqtSignal(int)
 
@@ -31,7 +33,6 @@ class GridViewWindow(QMainWindow):
 
 def OpenMapSelection(data):
     app = QApplication([])
-    column_order = ['Season', 'Ranking', 'Title', 'Map', 'MapName', 'IWAD', 'Files', 'Merge', 'Port', 'CompLevel', 'Doom wiki', 'Notes']
     window = GridViewWindow(data, column_order)
     selected = None
 

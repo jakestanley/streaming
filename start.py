@@ -4,6 +4,7 @@ from lib.py.ui import *
 from lib.py.obs import *
 from lib.py.wad import *
 from lib.py.patches import *
+from lib.py.common import *
 
 from datetime import datetime
 
@@ -17,22 +18,41 @@ import subprocess
 p_args = get_args()
 
 def GetLastMap():
+    # TODO check if file exists
+    # TODO save last map on complete
+    # TODO test
     if(p_args.last):
-        # TODO check if file exists
-        # TODO save last map on complete
-        return open("./last.json")
+        with(open("./last.json")) as f:
+            return json.load(f)
     return None
+
+def VerifyModListCsvHeader(reader):
+    for required in required_header_names:
+        if not required in reader.fieldnames:
+            print(f"""
+    Error: Missing required column '{required}' in header.
+    Header contained '{reader.fieldnames}'
+            """)
+            exit(1)
+    return reader;
 
 def GetMaps():
     if(p_args.mod_list):
-        _csv = open(p_args.mod_list)
-        return GetMapsFromModList(csv.DictReader(_csv), config['pwad_dir'])
-    elif(p_args.map_list):
-        _csv = open(p_args.map_list)
-        return csv.DictReader(_csv)
+        try:
+            _csv = open(p_args.mod_list)
+        except FileNotFoundError:
+            print(f"""
+    Error: Could not find file 
+        '{p_args.mod_list}'
+            """)
+            exit(1)
+        verified = VerifyModListCsvHeader(csv.DictReader(_csv))
+        return GetMapsFromModList(verified, config['pwad_dir'])
     else:
-        # TODO exception? proper error? throw?
-        print("Error. No map source could be obtained. Maybe I'll just launch Doom?")
+        print("""
+    Error. No mod list provided. Maybe I should just launch Doom?
+        """)
+        parser.print_usage()
         exit(1)
 
 def GetMapNameString(map):
@@ -59,6 +79,8 @@ if(not map):
         map = random.choice(maps)
     else:
         map = GetMapSelection(maps)
+        with open('last.json', 'w') as f:
+            json.dump(map, f)
 
 if(not map):
     print("no map was selected")
@@ -108,12 +130,15 @@ if len(patches['pwads']) > 0:
 
 obsController.UpdateMapTitle(map['Title'])
 
+# set the demo name. even if we don't record a demo, we use this to save stats
+# YYYY-MM-DDTHH:MM:SS
+timestr = datetime.now().strftime("%Y-%m-%dT%H%M%S")
+demo_name = f"{demo_prefix}-{mapId}-{timestr}"
+
 # record the demo
-if (not config['no_demo']):
-    # TODO may need to use for other stuff so consider moving it out of this block?
-    timestr = datetime.now().strftime("%Y-%m-%dT%H%M%S")
+if (not p_args.no_demo):
     doom_args.append("-record")
-    doom_args.append(f"{config['demo_dir']}/{demo_prefix}-{mapId}-{timestr}.lmp")
+    doom_args.append(f"{config['demo_dir']}/{demo_name}.lmp")
 
 if map['Port'] == 'chocolate':
     if len(patches['merges']) > 0:
@@ -135,6 +160,12 @@ command = [executable]
 command.extend(doom_args)
 
 obsController.SetScene('Playing')
+if p_args.auto_record:
+    obsController.StartRecording()
+
 running = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-# TODO stop recording and move file
+
+if p_args.auto_record:
+    obsController.StopRecording(demo_name)
+
 obsController.SetScene('Waiting')

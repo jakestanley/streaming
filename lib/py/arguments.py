@@ -1,7 +1,8 @@
 import argparse
 
+parser = argparse.ArgumentParser()
+
 def get_args():
-    parser = argparse.ArgumentParser()
     parser.add_argument("-no", "--no-obs",      action='store_true',    help="Disable OBS control")
     parser.add_argument("-nq", "--no-qol",      action='store_true',    help="Disable QoL mods (use this if you are experiencing issues)")
     parser.add_argument("-ps", "--play-scene",  type=str,               help="Which scene should OBS switch to when game starts")
@@ -13,9 +14,8 @@ def get_args():
     parser.add_argument("-cr", "--crispy",      action='store_true',    help="Use Crispy Doom instead of Chocolate Doom")
     parser.add_argument("-l",  "--last",        action='store_true',    help="If saved, play last map")
     parser.add_argument("-c",  "--config",      type=str,               help="Path to script configuration file", default=".\config.json")
-    # TODO CONSIDER should we error if the user provides both?
-    parser.add_argument("-wl", "--mod-list",    type=str,               help="Mod list (overrides --map-list')")
-    parser.add_argument("-ml", "--map-list",    type=str,               help="Map list")
+    parser.add_argument("-ml", "--mod-list",    type=str,               help="Mod list")
 
     args = parser.parse_args()
+
     return args

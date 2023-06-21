@@ -21,8 +21,9 @@ def GetPatches(map, pwad_dir):
     for merge in merges:
         mwads.append(f"{pwad_dir}/{merge}")
 
-    return {
-        dehs: dehs,
-        pwads: pwads,
-        mwads: mwads
-    }
+    p = {}
+    p['dehs'] = dehs
+    p['pwads'] = pwads
+    p['mwads'] = mwads
+
+    return p

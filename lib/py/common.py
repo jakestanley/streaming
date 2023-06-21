@@ -1,0 +1,2 @@
+required_header_names = ['Season','Ranking','Title','Author','Notes','DoomWiki','IWAD','Files','Port','Merge','CompLevel']
+column_order = ['Season', 'Ranking', 'Title', 'Map', 'MapName', 'IWAD', 'Files', 'Merge', 'Port', 'CompLevel', 'DoomWiki', 'Notes']

@@ -28,6 +28,7 @@ def GetMapsFromModList(rows, pwad_dir):
                     for mapentry in mapentries:
                         map = row.copy()
                         map['Map'] = mapentry
+                        map['MapName'] = ""
                         maps.append(map)
 
     return maps
