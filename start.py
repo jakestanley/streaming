@@ -6,6 +6,7 @@ from lib.py.wad import *
 from lib.py.patches import *
 from lib.py.common import *
 from lib.py.stats import *
+from lib.py.launch import *
 
 from datetime import datetime
 
@@ -15,7 +16,6 @@ import os
 import subprocess
 
 # constants
-LEVELSTAT_TXT = "./levelstat.txt"
 LAST_JSON = "./last.json"
 
 p_args = get_args()
@@ -63,24 +63,9 @@ def GetMaps():
 def GetMapNameString(map):
     return f"#{map['Ranking']}: {map['Title']} | {map['Author']} | {map['Map']}"
 
-def WriteStats(stats, demo_dir, demo_name):
-    stats_json_path = f"{demo_dir}/{demo_name}-STATS.json"
-
-    if os.path.exists(LEVELSTAT_TXT):
-        with(open(LEVELSTAT_TXT)) as raw_level_stats:
-            if not os.path.exists("./tmp"):
-                os.mkdir("./tmp")
-            archived_level_stat_txt = f"./tmp/levelstat_{demo_name}.txt"
-            stats['levelStats'] = ParseLevelStats(raw_level_stats.read())
-    else:
-        print("""
-    No levelstat.txt found. I assume you didn't finish the level or aren't using dsda-doom""")
-    
-    with(open(stats_json_path, 'w')) as j:
-        json.dump(stats, j)
-
 _json = open(p_args.config) 
 config = json.load(_json) 
+lc = GameConfig(config)
 stats = NewStats()
 
 obsController = ObsController(not p_args.no_obs)
@@ -102,64 +87,44 @@ if(not map):
     exit(1)
 
 # set default doom arguments
-doom_args = []
-complevel = map['CompLevel'] or config['default_complevel']
-doom_args.extend(['-nomusic', '-skill', '4'])
-
-# default
-demo_prefix = ""
-demo_name = ""
+lc.set_comp_level(map['CompLevel'] or config['default_complevel'])
 
 mapId = map['Map']
 stats['map'] = mapId
 
+# TODO consider set_map in GameConfig
 if IsDoom1(mapId):
     warp = GetDoom1Warp(mapId)
-    demo_prefix="DOOM" # default just in case no pwad is provided
-    iwadpath = f"{config['iwad_dir']}/DOOM.wad"
+    lc.set_iwad("DOOM")
 elif IsDoom2(mapId):
     warp = GetDoom2Warp(mapId)
-    demo_prefix="DOOM2" # default just in case no pwad is provided
-    iwadpath = f"{config['iwad_dir']}/DOOM2.wad"
+    lc.set_iwad("DOOM2")
 else:
     print(f"Unsupported map ID '{mapId}'")
     exit(1)
 
-doom_args.extend(['-iwad', iwadpath])
-doom_args.extend(['-warp'])
-doom_args.extend(warp)
+lc.set_warp(warp)
+lc.set_map_id(mapId)
 
 patches = GetPatches(map, config['pwad_dir'])
-
-if len(patches['dehs']) > 0:
-    doom_args.append("-deh")
-    doom_args.extend(patches['dehs'])
-
-if len(patches['pwads']) > 0:
-    doom_args.append("-file")
-    # use first pwad name as demo prefix
-    demo_prefix = os.path.splitext(os.path.basename(patches['pwads'][0]))[0]
-    doom_args.extend(patches['pwads'])
+lc.set_dehs(patches['dehs'])
+lc.set_pwads(patches['pwads'])
+lc.set_mwads(patches['mwads'])
 
 obsController.UpdateMapTitle(map['Title'])
 
 # set the demo name. even if we don't record a demo, we use this to save stats
 # YYYY-MM-DDTHH:MM:SS
 timestr = datetime.now().strftime("%Y-%m-%dT%H%M%S")
-demo_name = f"{demo_prefix}-{mapId}-{timestr}"
 
 # record the demo
-if (not p_args.no_demo):
-    doom_args.append("-record")
-    doom_args.append(f"{config['demo_dir']}/{demo_name}.lmp")
+lc.set_record_demo(not p_args.no_demo)
 
 if map['Port'] == 'chocolate':
-    if len(patches['merges']) > 0:
-        doom_args.append("-merge")
-        doom_args.extend(patches['merges'])
 
-    doom_args.extend(["-config", config['chocolatedoom_cfg_default'], "-extraconfig", config['chocolatedoom_cfg_extra']])
+    doom_args = lc.build_chocolate_doom_args()
 
+    # TODO: fix as this is a switch param, not in config
     if(config['crispy']):
         stats['sourcePort'] = "crispy"
         executable = config['crispydoom_path']
@@ -167,9 +132,12 @@ if map['Port'] == 'chocolate':
         stats['sourcePort'] = "chocolate"
         executable = config['chocolatedoom_path']
 else:
-    stats['compLevel'] = complevel
-    doom_args.extend(['-complevel', complevel, '-window', '-levelstat'])
+
+    doom_args = lc.build_dsda_doom_args()
+
+    stats['compLevel'] = lc.get_comp_level()
     stats['sourcePort'] = "dsdadoom"
+
     executable = config['dsda_path']
 
 print(f"""
@@ -179,6 +147,8 @@ print(f"""
 command = [executable]
 command.extend(doom_args)
 stats['args'] = doom_args
+
+demo_name = lc.get_demo_name()
 
 obsController.SetScene('Playing')
 if p_args.auto_record:

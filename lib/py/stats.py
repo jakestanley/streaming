@@ -1,4 +1,9 @@
 import re
+import os
+import json
+
+# constants
+LEVELSTAT_TXT = "./levelstat.txt"
 
 def NewStats():
     _stats = {}
@@ -35,3 +40,22 @@ def ParseLevelStats(rawLevelStats):
         levelStats["Items"] = re.search(regex_items, rawLevelStats).group(1)
 
     return levelStats
+
+def WriteStats(stats, demo_dir, demo_name):
+    stats_json_path = f"{demo_dir}/{demo_name}-STATS.json"
+
+    if os.path.exists(LEVELSTAT_TXT):
+        with(open(LEVELSTAT_TXT)) as raw_level_stats:
+            if not os.path.exists("./tmp"):
+                os.mkdir("./tmp")
+            stats['levelStats'] = ParseLevelStats(raw_level_stats.read())
+            archived_level_stat_txt = f"./tmp/levelstat_{demo_name}.txt"
+            raw_level_stats.close()
+            os.rename(LEVELSTAT_TXT, archived_level_stat_txt)
+            
+    else:
+        print("""
+    No levelstat.txt found. I assume you didn't finish the level or aren't using dsda-doom""")
+    
+    with(open(stats_json_path, 'w')) as j:
+        json.dump(stats, j)
