@@ -91,25 +91,21 @@ demo_prefix = ""
 demo_name = ""
 
 mapId = map['Map']
-DOOM_regex=r'^E(\d)M(\d)$'
-DOOM2_regex=r'^MAP(\d+)$'
 
-if re.match(DOOM_regex, mapId):
-    print("Detected a Doom map string")
+if IsDoom1(mapId):
+    warp = GetDoom1Warp(mapId)
     demo_prefix="DOOM" # default just in case no pwad is provided
-    episodeno = (re.match(DOOM_regex, mapId).group(1))
-    mapno =     (re.match(DOOM_regex, mapId).group(2))
-    doom_args.extend(['-warp', episodeno, mapno])
-    doom_args.extend(['-iwad', f"{config['iwad_dir']}/DOOM.wad"])
-elif re.match(DOOM2_regex, map['Map']):
-    print("Detected a Doom II map string")
+    iwadpath = f"{config['iwad_dir']}/DOOM.wad"
+elif IsDoom2(mapId):
+    warp = GetDoom2Warp(mapId)
     demo_prefix="DOOM2" # default just in case no pwad is provided
-    mapno = (re.match(DOOM2_regex, mapId).group(1))
-    doom_args.extend(['-warp', mapno])
-    doom_args.extend(['-iwad', f"{config['iwad_dir']}/DOOM2.wad"])
+    iwadpath = f"{config['iwad_dir']}/DOOM2.wad"
 else:
-    print(f"Could not parse Map value: {map['Map']}")
+    print(f"Unsupported map ID '{mapId}'")
     exit(1)
+
+doom_args.extend(['-iwad', iwadpath])
+doom_args.extend(['-warp', warp])
 
 patches = GetPatches(map, config['pwad_dir'])
 

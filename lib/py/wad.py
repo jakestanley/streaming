@@ -2,6 +2,23 @@ import subprocess
 import os
 import re
 
+DOOM_regex=r'^E(\d)M(\d)$'
+DOOM2_regex=r'^MAP(\d+)$'
+
+def IsDoom1(mapId):
+    return re.match(DOOM_regex, mapId)
+
+def IsDoom2(mapId):
+    return re.match(DOOM2_regex, mapId)
+
+def GetDoom1Warp(mapId):
+    episodeno = (re.match(DOOM_regex, mapId).group(1))
+    mapno =     (re.match(DOOM_regex, mapId).group(2))
+    return f"{episodeno} {mapno} "
+
+def GetDoom2Warp(mapId):
+    return re.match(DOOM2_regex, mapId).group(1)
+
 def GetMapsFromModList(rows, pwad_dir):
     regex_mapentries = '(E\dM\d|MAP\d\d|MAPINFO)'
     maps = []
@@ -19,7 +36,6 @@ def GetMapsFromModList(rows, pwad_dir):
                     mapentries = re.findall("(E\dM\d|MAP\d\d) \"(.*)\"", output)
                     for mapentry in mapentries:
                         map = row.copy()
-                        # TODO separate map name and wad title so we can have a caption format like Sunlust MAP02: Down Through
                         map['Map'] = mapentry[0]
                         map['MapName'] = mapentry[1]
                         maps.append(map)
