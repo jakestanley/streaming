@@ -14,7 +14,7 @@ def IsDoom2(mapId):
 def GetDoom1Warp(mapId):
     episodeno = (re.match(DOOM_regex, mapId).group(1))
     mapno =     (re.match(DOOM_regex, mapId).group(2))
-    return f"{episodeno} {mapno} "
+    return [episodeno, mapno]
 
 def GetDoom2Warp(mapId):
     return re.match(DOOM2_regex, mapId).group(1)

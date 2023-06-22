@@ -1,5 +1,14 @@
 import re
 
+def NewStats():
+    _stats = {}
+    _stats['map']         = ""
+    _stats['compLevel']   = 0
+    _stats['sourcePort']  = ""
+    _stats['args']        = []
+    _stats['levelStats']  = None
+    return _stats
+
 def ParseLevelStats(rawLevelStats):
 
     levelStats = {}

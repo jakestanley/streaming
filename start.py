@@ -5,22 +5,25 @@ from lib.py.obs import *
 from lib.py.wad import *
 from lib.py.patches import *
 from lib.py.common import *
+from lib.py.stats import *
 
 from datetime import datetime
 
 import json
 import csv
-import re
 import os
-import time
 import subprocess
+
+# constants
+LEVELSTAT_TXT = "./levelstat.txt"
+LAST_JSON = "./last.json"
 
 p_args = get_args()
 
 def GetLastMap():
     if(p_args.last):
-        if os.path.exists("./last.json"):
-            with(open("./last.json")) as f:
+        if os.path.exists(LAST_JSON):
+            with(open(LAST_JSON)) as f:
                 return json.load(f)
         else:
             print("""
@@ -60,8 +63,25 @@ def GetMaps():
 def GetMapNameString(map):
     return f"#{map['Ranking']}: {map['Title']} | {map['Author']} | {map['Map']}"
 
+def WriteStats(stats, demo_dir, demo_name):
+    stats_json_path = f"{demo_dir}/{demo_name}-STATS.json"
+
+    if os.path.exists(LEVELSTAT_TXT):
+        with(open(LEVELSTAT_TXT)) as raw_level_stats:
+            if not os.path.exists("./tmp"):
+                os.mkdir("./tmp")
+            archived_level_stat_txt = f"./tmp/levelstat_{demo_name}.txt"
+            stats['levelStats'] = ParseLevelStats(raw_level_stats.read())
+    else:
+        print("""
+    No levelstat.txt found. I assume you didn't finish the level or aren't using dsda-doom""")
+    
+    with(open(stats_json_path, 'w')) as j:
+        json.dump(stats, j)
+
 _json = open(p_args.config) 
 config = json.load(_json) 
+stats = NewStats()
 
 obsController = ObsController(not p_args.no_obs)
 obsController.Setup()
@@ -91,6 +111,7 @@ demo_prefix = ""
 demo_name = ""
 
 mapId = map['Map']
+stats['map'] = mapId
 
 if IsDoom1(mapId):
     warp = GetDoom1Warp(mapId)
@@ -105,7 +126,8 @@ else:
     exit(1)
 
 doom_args.extend(['-iwad', iwadpath])
-doom_args.extend(['-warp', warp])
+doom_args.extend(['-warp'])
+doom_args.extend(warp)
 
 patches = GetPatches(map, config['pwad_dir'])
 
@@ -139,19 +161,24 @@ if map['Port'] == 'chocolate':
     doom_args.extend(["-config", config['chocolatedoom_cfg_default'], "-extraconfig", config['chocolatedoom_cfg_extra']])
 
     if(config['crispy']):
+        stats['sourcePort'] = "crispy"
         executable = config['crispydoom_path']
     else:
+        stats['sourcePort'] = "chocolate"
         executable = config['chocolatedoom_path']
 else:
-    print(f"""
-    Starting dsda-doom with the following arguments:
-        {doom_args}      
-    """)
-    doom_args.extend(['-complevel', complevel, '-window'])
+    stats['compLevel'] = complevel
+    doom_args.extend(['-complevel', complevel, '-window', '-levelstat'])
+    stats['sourcePort'] = "dsdadoom"
     executable = config['dsda_path']
+
+print(f"""
+    Starting with the following arguments:
+        {doom_args}""")
 
 command = [executable]
 command.extend(doom_args)
+stats['args'] = doom_args
 
 obsController.SetScene('Playing')
 if p_args.auto_record:
@@ -163,3 +190,5 @@ if p_args.auto_record:
     obsController.StopRecording(demo_name)
 
 obsController.SetScene('Waiting')
+
+WriteStats(stats, config['demo_dir'], demo_name)
