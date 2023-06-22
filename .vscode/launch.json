@@ -48,7 +48,7 @@
             "args": [
                 "--config", "./examples/config.json", 
                 "--mod-list", "./examples/ModList_Season1.csv",
-                "--auto-record"
+                "--last"
             ]
         },
         {

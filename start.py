@@ -18,12 +18,14 @@ import subprocess
 p_args = get_args()
 
 def GetLastMap():
-    # TODO check if file exists
-    # TODO save last map on complete
-    # TODO test
     if(p_args.last):
-        with(open("./last.json")) as f:
-            return json.load(f)
+        if os.path.exists("./last.json"):
+            with(open("./last.json")) as f:
+                return json.load(f)
+        else:
+            print("""
+    Cannot select last map as 'last.json' was not found
+            """)
     return None
 
 def VerifyModListCsvHeader(reader):
@@ -58,13 +60,6 @@ def GetMaps():
 def GetMapNameString(map):
     return f"#{map['Ranking']}: {map['Title']} | {map['Author']} | {map['Map']}"
 
-def GetMapSelection(maps):
-    if (p_args.last):
-        open("./last.json")
-        # TODO: load last map
-    else:
-        return OpenMapSelection(maps)
-
 _json = open(p_args.config) 
 config = json.load(_json) 
 
@@ -78,7 +73,7 @@ if(not map):
         import random
         map = random.choice(maps)
     else:
-        map = GetMapSelection(maps)
+        map = OpenMapSelection(maps)
         with open('last.json', 'w') as f:
             json.dump(map, f)
 
@@ -152,7 +147,10 @@ if map['Port'] == 'chocolate':
     else:
         executable = config['chocolatedoom_path']
 else:
-    print("Starting dsda-doom with the following arguments:")
+    print(f"""
+    Starting dsda-doom with the following arguments:
+        {doom_args}      
+    """)
     doom_args.extend(['-complevel', complevel, '-window'])
     executable = config['dsda_path']
 
