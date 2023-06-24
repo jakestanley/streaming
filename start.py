@@ -125,7 +125,7 @@ if map['Port'] == 'chocolate':
     doom_args = lc.build_chocolate_doom_args()
 
     # TODO: fix as this is a switch param, not in config
-    if(config['crispy']):
+    if(p_args.crispy):
         stats['sourcePort'] = "crispy"
         executable = config['crispydoom_path']
     else:
