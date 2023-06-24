@@ -17,7 +17,8 @@ def GetDoom1Warp(mapId):
     return [episodeno, mapno]
 
 def GetDoom2Warp(mapId):
-    return re.match(DOOM2_regex, mapId).group(1)
+    map = re.match(DOOM2_regex, mapId).group(1)
+    return [f"{int(map)}"]
 
 def GetMapsFromModList(rows, pwad_dir):
     regex_mapentries = '(E\dM\d|MAP\d\d|MAPINFO)'

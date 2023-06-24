@@ -31,7 +31,6 @@ class ObsController:
             self.obs_client.start_record()
 
     def StopRecording(self, name=None):
-        path = ""
         if self.enabled:
             path = self.obs_client.stop_record().output_path
         else:
@@ -57,10 +56,13 @@ class ObsController:
         if self.enabled:
             self.obs_client.set_current_program_scene(title)
         else:
-            print(f"OBS is disabled. Title provided: '{title}'")
+            print(f"OBS is disabled. Scene requested: '{title}'")
 
     def UpdateMapTitle(self, title):
-        settings = {}
-        # TODO configurable scene/input names
-        settings['Text'] = title
-        self.obs_client.set_input_settings("Text Map Name", settings=settings, overlay=False)
+        if self.enabled:
+            settings = {}
+            # TODO configurable scene/input names
+            settings['Text'] = title
+            self.obs_client.set_input_settings("Text Map Name", settings=settings, overlay=False)
+        else:
+            print(f"OBS is disabled. Title provided: '{title}'")
