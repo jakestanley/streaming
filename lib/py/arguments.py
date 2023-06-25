@@ -13,7 +13,7 @@ def get_args():
     parser.add_argument("-nd", "--no-demo",     action='store_true',    help="Demo recording will be disabled")
     parser.add_argument("-cr", "--crispy",      action='store_true',    help="Use Crispy Doom instead of Chocolate Doom")
     parser.add_argument("-l",  "--last",        action='store_true',    help="If saved, play last map")
-    parser.add_argument("-c",  "--config",      type=str,               help="Path to script configuration file", default=".\config.json")
+    parser.add_argument("-c",  "--config",      type=str,               help="Path to script configuration file", default=".\examples\config.json")
     parser.add_argument("-ml", "--mod-list",    type=str,               help="Mod list")
 
     args = parser.parse_args()

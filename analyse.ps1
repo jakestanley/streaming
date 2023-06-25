@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 Param(
-    [string] [Parameter(HelpMessage="Path to configuration file")] $ConfigPath = ".\config.json",
-    [string] [Parameter(HelpMessage="Path to maps CSV file")] $CsvFilePath = ".\Season1.csv"
+    [string] [Parameter(HelpMessage="Path to configuration file")] $ConfigPath = ".\example\config.json",
+    [string] [Parameter(HelpMessage="Path to maps CSV file")] $CsvFilePath = ".\example\Season1.csv"
 )
 
 Import-Module ./common.psm1
