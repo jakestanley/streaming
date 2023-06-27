@@ -31,35 +31,6 @@ def GetLastMap():
             """)
     return None
 
-def VerifyModListCsvHeader(reader):
-    for required in required_header_names:
-        if not required in reader.fieldnames:
-            print(f"""
-    Error: Missing required column '{required}' in header.
-    Header contained '{reader.fieldnames}'
-            """)
-            exit(1)
-    return reader;
-
-def GetMaps():
-    if(p_args.mod_list):
-        try:
-            _csv = open(p_args.mod_list)
-        except FileNotFoundError:
-            print(f"""
-    Error: Could not find file 
-        '{p_args.mod_list}'
-            """)
-            exit(1)
-        verified = VerifyModListCsvHeader(csv.DictReader(_csv))
-        return GetMapsFromModList(verified, config['pwad_dir'])
-    else:
-        print("""
-    Error. No mod list provided. Maybe I should just launch Doom?
-        """)
-        parser.print_usage()
-        exit(1)
-
 def GetMapNameString(map):
     return f"#{map['Ranking']}: {map['Title']} | {map['Author']} | {map['Map']}"
 
@@ -73,7 +44,7 @@ obsController.Setup()
 
 map = GetLastMap()
 if(not map):
-    maps = GetMaps()
+    maps = GetMaps(p_args.mod_list, config['pwad_dir'])
     if(p_args.random):
         import random
         map = random.choice(maps)
