@@ -27,15 +27,15 @@ def GetLastMap():
                 return json.load(f)
         else:
             print("""
-    Cannot select last map as 'last.json' was not found
+    Cannot select last map as '{LAST_JSON}' was not found
             """)
     return None
 
 def GetMapNameString(map):
     return f"#{map['Ranking']}: {map['Title']} | {map['Author']} | {map['Map']}"
 
-_json = open(p_args.config) 
-config = json.load(_json) 
+p_args = get_args()
+config = json.load(open(p_args.config)) 
 lc = GameConfig(config)
 stats = NewStats()
 
@@ -50,7 +50,8 @@ if(not map):
         map = random.choice(maps)
     else:
         map = OpenMapSelection(maps)
-        with open('last.json', 'w') as f:
+        # saves selected map for last
+        with open(LAST_JSON, 'w') as f:
             json.dump(map, f)
 
 if(not map):
