@@ -2,7 +2,12 @@ import argparse
 
 parser = argparse.ArgumentParser()
 
+def _get_common_args():
+    parser.add_argument("-c",  "--config",      type=str,               help="Path to script configuration file", default=".\examples\config.json")
+    parser.add_argument("-ml", "--mod-list",    type=str,               help="Mod list")
+
 def get_args():
+    _get_common_args()
     parser.add_argument("-no", "--no-obs",      action='store_true',    help="Disable OBS control")
     parser.add_argument("-nq", "--no-qol",      action='store_true',    help="Disable QoL mods (use this if you are experiencing issues)")
     parser.add_argument("-ps", "--play-scene",  type=str,               help="Which scene should OBS switch to when game starts")
@@ -13,9 +18,14 @@ def get_args():
     parser.add_argument("-nd", "--no-demo",     action='store_true',    help="Demo recording will be disabled")
     parser.add_argument("-cr", "--crispy",      action='store_true',    help="Use Crispy Doom instead of Chocolate Doom")
     parser.add_argument("-l",  "--last",        action='store_true',    help="If saved, play last map")
-    parser.add_argument("-c",  "--config",      type=str,               help="Path to script configuration file", default=".\examples\config.json")
-    parser.add_argument("-ml", "--mod-list",    type=str,               help="Mod list")
 
+    args = parser.parse_args()
+
+    return args
+
+def get_analyse_args():
+    _get_common_args()
+    
     args = parser.parse_args()
 
     return args
