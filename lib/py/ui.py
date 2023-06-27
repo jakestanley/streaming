@@ -4,6 +4,8 @@ from PyQt5.QtCore import Qt, pyqtSignal
 
 from lib.py.common import *
 
+column_order = ['Season', 'Ranking', 'Title', 'Map', 'MapName', 'IWAD', 'Files', 'Merge', 'Port', 'CompLevel', 'DoomWiki', 'Notes']
+
 class GridViewWindow(QMainWindow):
     index_selected = pyqtSignal(int)
 
