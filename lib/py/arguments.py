@@ -5,6 +5,7 @@ parser = argparse.ArgumentParser()
 def _get_common_args():
     parser.add_argument("-c",  "--config",      type=str,               help="Path to script configuration file", default=".\examples\config.json")
     parser.add_argument("-ml", "--mod-list",    type=str,               help="Mod list")
+    parser.add_argument("-g", "--no-gui",       action='store_true',    help="Command line operation only")
 
 def get_args():
     _get_common_args()
