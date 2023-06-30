@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from lib.py.arguments import *
-from lib.py.ui import *
+from lib.py.ui.mapselect import *
 from lib.py.obs import *
 from lib.py.wad import *
 from lib.py.patches import *
@@ -18,8 +18,7 @@ import subprocess
 # constants
 LAST_JSON = "./last.json"
 
-p_args = get_args()
-
+# TODO: must return a `Map` instance or None
 def GetLastMap():
     if(p_args.last):
         if os.path.exists(LAST_JSON):
@@ -31,19 +30,23 @@ def GetLastMap():
             """)
     return None
 
+# TODO make this a member of `Map`
 def GetMapNameString(map):
     return f"#{map['Ranking']}: {map['Title']} | {map['Author']} | {map['Map']}"
 
 p_args = get_args()
 config = json.load(open(p_args.config)) 
-lc = GameConfig(config)
+lc = LaunchConfig(config)
 stats = NewStats()
 
 obsController = ObsController(not p_args.no_obs)
 obsController.Setup()
 
+# TODO must return a `Map`
+# Get map to be played
 map = GetLastMap()
 if(not map):
+    mods = GetMods(p_args.mod_list, config['pwad_dir'])
     maps = GetMaps(p_args.mod_list, config['pwad_dir'])
     if(p_args.random):
         import random
@@ -58,8 +61,7 @@ if(not map):
     print("no map was selected")
     exit(1)
 
-# set default doom arguments
-lc.set_comp_level(map['CompLevel'] or config['default_complevel'])
+lc.set_map(map)
 
 mapId = map['Map']
 stats['map'] = mapId
@@ -74,14 +76,6 @@ elif IsDoom2(mapId):
 else:
     print(f"Unsupported map ID '{mapId}'")
     exit(1)
-
-lc.set_warp(warp)
-lc.set_map_id(mapId)
-
-patches = GetPatches(map, config['pwad_dir'])
-lc.set_dehs(patches['dehs'])
-lc.set_pwads(patches['pwads'])
-lc.set_mwads(patches['mwads'])
 
 obsController.UpdateMapTitle(map['Title'])
 

@@ -1,35 +1,48 @@
 import os
 from datetime import datetime
 
-DEFAULT_SKILL = 4
+ULTRA_VIOLENCE = 4
+DEFAULT_SKILL = ULTRA_VIOLENCE
 
-class GameConfig:
+class LaunchConfig:
     def __init__(self, config):
         self._script_config = config
         self._timestr = None
-        self._pwads = []
-        self._dehs = []
-        self._mwads = []
-        self._map_id = ""
-        self._warp = []
-        self._iwad = ""
+        self._map = None
         self._file = ""
         self._record_demo = True
         self._config = ""
         self._extra_config = ""
         self._skill = DEFAULT_SKILL
         self._no_music = True
-        self._comp_level = 0
+        self._comp_level = None
         self._window = True
         self._demo_prefix = ""
+        self._port_override = None
+
+    def get_comp_level(self):
+        # initialise final comp level only
+        final_comp_level = 9
+
+        # if comp level has been overridden
+        if self._comp_level:
+            final_comp_level = self._comp_level
+        # or if map has a comp level
+        elif self._map.mod.complevel:
+            final_comp_level = self._map.get_mod().get_comp_level()
+        # or use default comp level
+        else:
+            final_comp_level = int(self._script_config.default_complevel)
+
+        return final_comp_level
 
     def build_chocolate_doom_args(self):
         
         choccy_args = self.build_args()
 
-        if len(self._mwads) > 0:
+        if len(self._map.mod.mwads) > 0:
             choccy_args.append("-merge")
-            choccy_args.extend(self._mwads)
+            choccy_args.extend(self._map.mod.mwads)
 
         choccy_args.extend(["-config", self._script_config['chocolatedoom_cfg_default']])
         choccy_args.extend(["-extraconfig", self._script_config['chocolatedoom_cfg_extra']])
@@ -40,29 +53,35 @@ class GameConfig:
 
         dsda_args = self.build_args()
 
-        dsda_args.extend(['-complevel', self._comp_level, '-window', '-levelstat'])
+        final_comp_level = self.get_comp_level()
+
+        dsda_args.extend(['-complevel', str(final_comp_level)])
+        # the usual
+        dsda_args.extend(['-window', '-levelstat'])
 
         return dsda_args
 
     def build_args(self):
 
+        # TODO: add qol mods
         doom_args = []
 
-        if len(self._dehs) > 0:
+        if len(self._map.mod.dehs) > 0:
             doom_args.append("-deh")
-            doom_args.extend(self._dehs)
+            doom_args.extend(self._map.mod.dehs)
 
-        if len(self._pwads) > 0:
+        if len(self._map.mod.pwads) > 0:
             doom_args.append("-file")
-            doom_args.extend(self._pwads)
+            doom_args.extend(self._map.mod.pwads)
 
-        doom_args.extend(['-iwad', f"{self._script_config['iwad_dir']}/{self._iwad}.wad"])
+        # TODO consider class for handling getting different types of wads instead of passing this around
+        doom_args.extend(['-iwad', f"{self._script_config.iwad_dir}/{self._map.mod.iwad}"])
         doom_args.extend(['-warp'])
-        doom_args.extend(self._warp)
+        doom_args.extend(self._map.get_warp())
 
         if self._record_demo:
             doom_args.append("-record")
-            doom_args.append(f"{self._script_config['demo_dir']}/{self.get_demo_name()}.lmp")
+            doom_args.append(f"{self._script_config.demo_dir}/{self.get_demo_name()}.lmp")
 
         if self._no_music:
             doom_args.append('-nomusic')
@@ -71,59 +90,18 @@ class GameConfig:
 
         return doom_args
 
-    # demo_prefix
-    def set_demo_prefix(self, demo_prefix):
-        self._demo_prefix = demo_prefix
+    def set_map(self, map):
+        self._map = map
 
-    def get_demo_prefix(self):
-        return self._demo_prefix
+    def get_map(self):
+        return self._map
     
     # demo_name
     def get_demo_name(self):
         if self._timestr == None:
             self._timestr = datetime.now().strftime("%Y-%m-%dT%H%M%S")
 
-        if len(self._pwads) > 0:
-            demo_prefix = os.path.splitext(os.path.basename(self._pwads[0]))[0]
-        else:
-            demo_prefix = self._iwad
-
-        return f"{demo_prefix}-{self._map_id}-{self._timestr}"
-
-    # pwads
-    def set_pwads(self, pwads):
-        self._pwads = pwads
-
-    def get_pwads(self):
-        return self._pwads
-    
-    # dehs
-    def set_dehs(self, dehs):
-        self._dehs = dehs
-
-    def get_dehs(self):
-        return self._dehs
-    
-    # merges
-    def set_mwads(self, merges):
-        self._mwads = merges
-
-    def get_mwads(self):
-        return self._mwads
-
-    # warp # TODO consider set_map_id instead and infer that
-    def set_warp(self, warp):
-        self._warp = warp
-
-    def get_warp(self):
-        return self._warp
-
-    # iwad
-    def set_iwad(self, iwad):
-        self._iwad = iwad
-
-    def get_iwad(self):
-        return self._iwad
+        return f"{self._map.get_map_prefix()}-{self._timestr}"
 
     # file
     def set_file(self, file):
@@ -167,23 +145,41 @@ class GameConfig:
     def get_no_music(self):
         return self._no_music
 
-    # comp_level
-    def set_comp_level(self, comp_level):
-        self._comp_level = comp_level
+    def set_port_override(self, port):
+        self._port_override = port
 
-    def get_comp_level(self):
-        return self._comp_level
+    def get_port(self):
 
-    # window
-    def set_window(self, window):
-        self._window = window
+        # default port
+        final_port = "dsdadoom"
+        if (self._port_override):
+            final_port = self._port_override
+        elif (self._map.mod.port):
+            final_port = self._map.mod.port
 
-    def get_window(self):
-        return self._window
+        # TODO if crispy override set.
+        # port_override > crispy override > chocolate
+        if final_port == "chocolate" and self._port_override == None:
+            if self._script_config.crispy:
+                final_port = "crispy"
+            else:
+                final_port = "chocolate"
 
-    # map_id
-    def set_map_id(self, map_id):
-        self._map_id = map_id
+        return final_port
 
-    def get_map_id(self):
-        return self._map_id
+    def get_command(self):
+        # still TODO: stats
+        port = self.get_port()
+
+        command = []
+        if port in ["chocolate", "crispy"]:
+            if port == ["chocolate"]:
+                command.append(self._script_config.chocolatedoom_path)
+            else:
+                command.append(self._script_config.crispydoom_path)
+            command.extend(self.build_chocolate_doom_args())
+        elif port == "dsdadoom":
+            command.append(self._script_config.dsda_path)
+            command.extend(self.build_dsda_doom_args())
+
+        return command

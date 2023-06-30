@@ -1,12 +1,22 @@
 import os
+import subprocess
+import re
 
-def GetPatches(map, pwad_dir):
+import lib.py.wad as wad
+from lib.py.mod import *
+
+regex_mapentries = '(E\dM\d|MAP\d\d|MAPINFO)'
+
+
+
+
+def GetMod(mod, pwad_dir) -> Mod:
     dehs = []
     pwads = []
     mwads = []
 
     # build lists of map specific files we need to pass in
-    patches = [patch for patch in map['Files'].split('|') if patch]
+    patches = [patch for patch in mod['Files'].split('|') if patch]
     for patch in patches:
         ext = os.path.splitext(patch)[1]
         if ext.lower() == ".deh":
@@ -17,13 +27,11 @@ def GetPatches(map, pwad_dir):
             print(f"Ignoring unsupported file "'{patch}'"with extension '{ext}'")
 
     # for chocolate doom/vanilla wad merge emulation
-    merges = [merge for merge in map['Merge'].split('|') if merge]
+    merges = [merge for merge in mod['Merge'].split('|') if merge]
     for merge in merges:
         mwads.append(f"{pwad_dir}/{merge}")
 
-    p = {}
-    p['dehs'] = dehs
-    p['pwads'] = pwads
-    p['mwads'] = mwads
+    maps = wad.GetMapsForMod(mod, pwad_dir)
+    iwad = mod['iwad']
 
-    return p
+    return Mod(iwad, dehs, pwads, mwads, maps)

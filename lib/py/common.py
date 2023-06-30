@@ -14,6 +14,25 @@ def VerifyModListCsvHeader(reader):
             exit(1)
     return reader;
 
+def GetMods(mod_list, pwad_dir):
+    mods = []
+    if(mod_list):
+        try:
+            _csv = open(mod_list)
+        except FileNotFoundError:
+            print(f"""
+    Error: Could not find file 
+        '{mod_list}'
+            """)
+            exit(1)
+        verified = VerifyModListCsvHeader(csv.DictReader(_csv))
+        return wad.GetModsFromModsList(verified, pwad_dir)
+    else:
+        print("""
+    Error. No mod list provided. Maybe I should just launch Doom?
+        """)
+        exit(1)
+
 def GetMaps(mod_list, pwad_dir):
     if(mod_list):
         try:

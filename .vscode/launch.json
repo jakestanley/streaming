@@ -5,19 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Start (Mac, Python): Debug, NoObs, NoDemo, MapList",
-            "type": "python",
-            "request": "launch",
-            "program": "start.py",
-            "args": [
-                "--config", "./examples/config-mac.json",
-                "--map-list", "./examples/Season1.csv",
-                "--no-obs",
-                "--no-demo"
-            ]
-        },
-        {
-            "name": "Start (Mac, Python): Debug, NoObs, NoDemo, ModList (MAPINFO)",
+            "name": "Start (Mac, Python): MAPINFO test",
             "type": "python",
             "request": "launch",
             "program": "start.py",
@@ -29,15 +17,49 @@
             ]
         },
         {
+            "name": "Start2 (Mac, Python)",
+            "type": "python",
+            "request": "launch",
+            "program": "start2.py",
+            "args": [
+                "--config", "./examples/config-mac.json",
+                "--mod-list", "./examples/ModListSeason1.csv",
+                "--no-obs"
+            ]
+        },
+        {
+            "name": "Start2 (Mac, Python) GUI",
+            "type": "python",
+            "request": "launch",
+            "program": "start2.py",
+            "args": [
+                "--config", "./examples/config-mac.json",
+                "--mod-list", "./examples/ModListSeason1.csv",
+                "--play-scene", "Playing",
+                "--no-demo",
+                "--no-obs"
+            ]
+        },
+        {
             "name": "Start (Mac, Python): Debug, NoObs, NoDemo, ModList",
             "type": "python",
             "request": "launch",
             "program": "start.py",
             "args": [
                 "--config", "./examples/config-mac.json",
-                "--mod-list", "./examples/ModList_Season1.csv",
+                "--mod-list", "./examples/ModListSeason1.csv",
                 "--no-obs",
                 "--no-demo"
+            ]
+        },
+        {
+            "name": "Python: Analyse (Mac)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/analyse.py",
+            "args": [
+                "--config", "./examples/config-mac.json", 
+                "--mod-list", "./examples/ModListSeason1.csv"
             ]
         },
         {
