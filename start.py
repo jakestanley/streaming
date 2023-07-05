@@ -37,7 +37,7 @@ def GetMapNameString(map):
 p_args = get_args()
 config = json.load(open(p_args.config)) 
 lc = LaunchConfig(config)
-stats = NewStats()
+stats = Statistics(lc, config['demo_dir'])
 
 obsController = ObsController(not p_args.no_obs)
 obsController.Setup()
@@ -122,9 +122,8 @@ if p_args.auto_record:
 
 running = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
+obsController.SetScene('Waiting')
 if p_args.auto_record:
     obsController.StopRecording(demo_name)
-
-obsController.SetScene('Waiting')
 
 WriteStats(stats, config['demo_dir'], demo_name)

@@ -33,6 +33,8 @@ launch = LaunchConfig(config)
 obsController = ObsController(not p_args.no_obs)
 obsController.Setup()
 
+obsController.SetScene("Waiting")
+
 map = None
 if(p_args.last):
     map = GetLastMap()
@@ -44,9 +46,9 @@ if(not map):
         import random
         map = random.choice(maps)
     else:
-        # TODO flatten map list and get index
         map = OpenMapSelection(maps)
         SaveSelectedMap(map)
+
         # TODO consider implementing this??? consider implementing saving all command line args as config
         #SaveSelectedModList(p_args.mod_list)
 
@@ -58,10 +60,12 @@ demo_name = launch.get_demo_name()
 command = launch.get_command()
 
 obsController.SetScene('Playing')
+obsController.UpdateMapTitle(map.get_title())
 if p_args.auto_record:
     obsController.StartRecording()
 
 statistics = Statistics(launch, config.demo_dir)
+print(f"Running command\n\t{command}")
 running = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 # update stats and save

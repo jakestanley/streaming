@@ -34,10 +34,11 @@ def LoadMod(pwad_dir, season, ranking, title, author, iwad, files, port, merge, 
     patches = [patch for patch in files.split('|') if patch]
     for patch in patches:
         ext = os.path.splitext(patch)[1]
+        path = os.path.join(pwad_dir, patch)
         if ext.lower() == ".deh":
-            dehs.append(f"{pwad_dir}/{patch}")
+            dehs.append(path)
         elif ext.lower() == ".wad":
-            pwads.append(f"{pwad_dir}/{patch}")
+            pwads.append(path)
         else:
             print(f"Ignoring unsupported file "'{patch}'"with extension '{ext}'")
 

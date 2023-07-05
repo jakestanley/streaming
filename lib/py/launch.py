@@ -75,13 +75,17 @@ class LaunchConfig:
             doom_args.extend(self._map.mod.pwads)
 
         # TODO consider class for handling getting different types of wads instead of passing this around
-        doom_args.extend(['-iwad', f"{self._script_config.iwad_dir}/{self._map.mod.iwad}"])
+        if self._map.mod.iwad:
+            doom_args.extend(['-iwad', os.path.join(self._script_config.iwad_dir, self._map.mod.iwad)])
+        else:
+            doom_args.extend(['-iwad', os.path.join(self._script_config.iwad_dir, self._map.get_inferred_iwad())])
+        
         doom_args.extend(['-warp'])
         doom_args.extend(self._map.get_warp())
 
         if self._record_demo:
             doom_args.append("-record")
-            doom_args.append(f"{self._script_config.demo_dir}/{self.get_demo_name()}.lmp")
+            doom_args.append(os.path.join(self._script_config.demo_dir, self.get_demo_name() + ".lmp"))
 
         if self._no_music:
             doom_args.append('-nomusic')
@@ -101,7 +105,8 @@ class LaunchConfig:
         if self._timestr == None:
             self._timestr = datetime.now().strftime("%Y-%m-%dT%H%M%S")
 
-        return f"{self._map.get_map_prefix()}-{self._timestr}"
+        map_prefix = self._map.get_map_prefix()
+        return f"{map_prefix}-{self._timestr}"
 
     # file
     def set_file(self, file):

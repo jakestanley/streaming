@@ -17,6 +17,19 @@
             ]
         },
         {
+            "name": "Start2",
+            "type": "python",
+            "request": "launch",
+            "program": "start2.py",
+            "args": [
+                "--config", "./examples/config.json",
+                "--mod-list", "./examples/ModList_Season1.csv",
+                "--no-obs",
+                "--no-demo",
+                "--play-scene", "Playing"
+            ]
+        },
+        {
             "name": "Start2 (Mac, Python)",
             "type": "python",
             "request": "launch",

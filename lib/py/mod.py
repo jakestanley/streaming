@@ -38,6 +38,8 @@ class Mod:
         else:
             demo_prefix = self._iwad
 
+        return demo_prefix
+
     def load_maps(self, pwad_dir):
 
         #mapinfo_lumps: list(str) = get_mapinfo_lumps()
@@ -72,7 +74,8 @@ class Map:
         return self.id
 
     def get_map_prefix(self):
-        return f"{self.mod.get_mod_prefix()}-{self.id}"
+        mod_prefix = self.mod.get_mod_prefix()
+        return f"{mod_prefix}-{self.id}"
 
     def get_warp(self):
         warp = []
@@ -81,3 +84,16 @@ class Map:
                 # converts "01" to 1 then back to "1" cz i'm lazy
                 warp.append(str(int(group)))
         return warp
+    
+    def get_inferred_iwad(self):
+        groups = re.match(regex_warp, self.id).groups()
+        matches = []
+        for group in groups:
+            if group:
+                matches.append(group)
+        
+        iwad = 'DOOM2.WAD'
+        if len(matches) > 1:
+            iwad = 'DOOM.WAD'
+
+        return iwad

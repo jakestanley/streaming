@@ -7,6 +7,7 @@
 		"path": "D:\\Dropbox\\Games\\Doom\\Configs\\gzdoom\\gzdoom-pureish.ini"
 	},
 	"chocolatedoom_path": "C:\\Users\\mail\\opt\\chocolate-doom\\chocolate-doom.exe",
+	"crispydoom_path": "C:\\Users\\mail\\opt\\chocolate-doom\\chocolate-doom.exe",
 	"chocolatedoom_cfg_default": "D:\\Dropbox\\Games\\Doom\\Configs\\chocolate\\default.cfg",
 	"chocolatedoom_cfg_extra": "D:\\Dropbox\\Games\\Doom\\Configs\\chocolate\\chocolate-doom.cfg",
 	"iwad_dir": "D:\\Dropbox\\Games\\Doom\\WADs\\IWADs",
