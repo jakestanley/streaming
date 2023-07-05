@@ -45,7 +45,7 @@ def LoadMod(pwad_dir, season, ranking, title, author, iwad, files, port, merge, 
     # for chocolate doom/vanilla wad merge emulation
     merges = [merge for merge in merge.split('|') if merge]
     for merge in merges:
-        mwads.append(f"{pwad_dir}/{merge}")
+        mwads.append(os.path.join(pwad_dir, merge))
 
     mod = Mod(season = season, ranking = ranking, title = title, author = author, iwad = iwad, 
               dehs = dehs, pwads = pwads, mwads = mwads)

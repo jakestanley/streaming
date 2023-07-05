@@ -30,7 +30,7 @@ def GetMod(mod, pwad_dir) -> Mod:
     # for chocolate doom/vanilla wad merge emulation
     merges = [merge for merge in mod['Merge'].split('|') if merge]
     for merge in merges:
-        mwads.append(f"{pwad_dir}/{merge}")
+        mwads.append(os.path.join(pwad_dir, merge))
 
     maps = wad.GetMapsForMod(mod, pwad_dir)
     iwad = mod['iwad']

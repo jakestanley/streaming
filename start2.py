@@ -60,7 +60,7 @@ demo_name = launch.get_demo_name()
 command = launch.get_command()
 
 obsController.SetScene('Playing')
-obsController.UpdateMapTitle(map.get_title())
+obsController.UpdateMapTitle(f"{map.mod.title}: {map.get_title()} - {map.mod.author}")
 if p_args.auto_record:
     obsController.StartRecording()
 

@@ -38,7 +38,7 @@ class ObsController:
         
         parent = os.path.dirname(path)
         ext = os.path.splitext(path)[1]
-        newpath = f"{parent}/{name}{ext}"
+        newpath = os.path.join(parent, name, ext)
 
         if not name == None:
             print(f"""

@@ -59,6 +59,6 @@ class Statistics:
                 or aren't using dsda-doom""")
 
     def write_stats(self):
-        stats_json_path = f"{self._demo_dir}/{self._launch.get_demo_name()}-STATS.json"
+        stats_json_path = os.path.join(self._demo_dir, self._launch.get_demo_name() + "-STATS.json")
         with(open(stats_json_path, 'w')) as j:
             json.dump(self._stats, j)
