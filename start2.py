@@ -29,6 +29,7 @@ if(not p_args.no_gui):
     p_args = OpenOptionsGui(p_args)
 
 launch = LaunchConfig(config)
+launch.set_record_demo(not p_args.no_demo)
 
 obsController = ObsController(not p_args.no_obs)
 obsController.Setup()

@@ -83,7 +83,7 @@ class LaunchConfig:
         doom_args.extend(['-warp'])
         doom_args.extend(self._map.get_warp())
 
-        if self._record_demo:
+        if self._script_config:
             doom_args.append("-record")
             doom_args.append(os.path.join(self._script_config.demo_dir, self.get_demo_name() + ".lmp"))
 
