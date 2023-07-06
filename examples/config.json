@@ -1,11 +1,17 @@
 {
+	"obs": {
+		"playscene": "Playing",
+		"waitscene": "Waiting"
+	},
 	"default_complevel": "9",
-	"dsda_path": "G:\\Games\\dsda-doom-0.25.6\\dsda-doom.exe",
+	"dsda_path": "G:\\Games\\dsda-doom-0.26.2\\dsda-doom.exe",
+	"dsda_cfg": "G:\\Games\\dsda-doom-0.25.6\\dsda-doom.cfg",
 	"gzdoom_path": "C:\\Users\\mail\\opt\\gzdoom-4-10-0\\gzdoom.exe",
 	"gzdoom_cfg": {
 		"name": "Pureish",
 		"path": "D:\\Dropbox\\Games\\Doom\\Configs\\gzdoom\\gzdoom-pureish.ini"
 	},
+	"dsdadoom_hud_lump": "D:\\Dropbox\\Games\\Doom\\Configs\\dsdahud.lmp",
 	"chocolatedoom_path": "C:\\Users\\mail\\opt\\chocolate-doom\\chocolate-doom.exe",
 	"crispydoom_path": "C:\\Users\\mail\\opt\\chocolate-doom\\chocolate-doom.exe",
 	"chocolatedoom_cfg_default": "D:\\Dropbox\\Games\\Doom\\Configs\\chocolate\\default.cfg",

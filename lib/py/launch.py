@@ -1,4 +1,5 @@
 import os
+from lib.py.config import Config
 from datetime import datetime
 
 ULTRA_VIOLENCE = 4
@@ -6,11 +7,10 @@ DEFAULT_SKILL = ULTRA_VIOLENCE
 
 class LaunchConfig:
     def __init__(self, config):
-        self._script_config = config
+        self._script_config: Config = config
         self._timestr = None
         self._map = None
         self._file = ""
-        self._record_demo = True
         self._config = ""
         self._extra_config = ""
         self._skill = DEFAULT_SKILL
@@ -58,6 +58,11 @@ class LaunchConfig:
         dsda_args.extend(['-complevel', str(final_comp_level)])
         # the usual
         dsda_args.extend(['-window', '-levelstat'])
+
+        if self._script_config.dsdadoom_hud_lump:
+            dsda_args.extend(['-hud', self._script_config.dsdadoom_hud_lump])
+
+        dsda_args.extend(['-config', self._script_config.dsda_cfg])
 
         return dsda_args
 
@@ -121,13 +126,6 @@ class LaunchConfig:
 
     def get_record_demo(self):
         return self._record_demo
-
-    # config
-    def set_config(self, config):
-        self._config = config
-
-    def get_config(self):
-        return self._config
 
     # extra_config
     def set_extra_config(self, extra_config):
