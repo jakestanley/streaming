@@ -14,13 +14,6 @@ from lib.py.ui.options import OpenOptionsGui
 from lib.py.last import *
 from lib.py.stats import Statistics
 
-def GetMapsFromMods(mods):
-    maps = []
-    for mod in mods:
-        maps.extend(mod.maps)
-
-    return maps
-
 p_args = args.get_args()
 
 config = LoadConfig(p_args.config)

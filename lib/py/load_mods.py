@@ -1,6 +1,13 @@
 import csv
 from lib.py.patches import *
 
+def GetMapsFromMods(mods):
+    maps = []
+    for mod in mods:
+        maps.extend(mod.maps)
+
+    return maps
+
 def GetMaps():
     return None
 

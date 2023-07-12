@@ -30,6 +30,16 @@
             ]
         },
         {
+            "name": "Analyse (Mac)",
+            "type": "python",
+            "request": "launch",
+            "program": "analyse.py",
+            "args": [
+                "--config", "./examples/config.json",
+                "--mod-list", "./examples/ModList_Season1.csv"
+            ]
+        },
+        {
             "name": "Start2 (Mac, Python)",
             "type": "python",
             "request": "launch",
@@ -85,95 +95,6 @@
                 "--mod-list", "./examples/ModList_Season1.csv",
                 "--last"
             ]
-        },
-        {
-            "name": "Start: Debug, NoObs, Jokes",
-            "type": "PowerShell",
-            "request": "launch",
-            "script": "${workspaceFolder}/start.ps1",
-            "args": [
-                "-ConfigPath", "./examples/config.json", 
-                "-MapListCsv", "./examples/Jokes.csv", 
-                "-Debug", 
-                "-NoDemo", 
-                "-NoObs"
-            ]
-        },
-        {
-            "name": "Start: Debug, NoObs, NoDemo, ModList",
-            "type": "PowerShell",
-            "request": "launch",
-            "script": "${workspaceFolder}/start.ps1",
-            "args": [
-                "-ConfigPath", "./examples/config.json", 
-                "-ModListCsv", "./examples/ModListSeason1.csv",
-                "-Debug", 
-                "-NoDemo", 
-                "-NoObs"
-            ]
-        },
-        {
-            "name": "Start: Debug, NoObs, NoDemo, ModList (MAPINFO test)",
-            "type": "PowerShell",
-            "request": "launch",
-            "script": "${workspaceFolder}/start.ps1",
-            "args": [
-                "-ConfigPath", "./examples/config.json", 
-                "-ModListCsv", "./examples/MapInfoTest.csv",
-                "-Debug", 
-                "-NoDemo", 
-                "-NoObs"
-            ]
-        },
-        {
-            "name": "Start (Mac): Debug, NoObs, NoDemo, ModList",
-            "type": "PowerShell",
-            "request": "launch",
-            "script": "${workspaceFolder}/start.ps1",
-            "args": [
-                "-ConfigPath", "./examples/config-mac.json", 
-                "-ModListCsv", "./examples/ModListSeason1.csv",
-                "-Debug", 
-                "-NoDemo", 
-                "-NoObs"
-            ]
-        },
-        {
-            "name": "Start (Mac): Debug, NoObs",
-            "type": "PowerShell",
-            "request": "launch",
-            "script": "${workspaceFolder}/start.ps1",
-            "args": ["-ConfigPath", "./examples/config-mac.json", "-Debug", "-NoObs"]
-        }, {
-            "name": "Start (Mac): Debug, NoObs, NoDemo",
-            "type": "PowerShell",
-            "request": "launch",
-            "script": "${workspaceFolder}/start.ps1",
-            "args": ["-ConfigPath", "./examples/config-mac.json", "-Debug", "-NoObs", "-NoDemo"]
-        }, {
-            "name": "Start (Mac): Debug, NoObs, ReRecord",
-            "type": "PowerShell",
-            "request": "launch",
-            "script": "${workspaceFolder}/start.ps1",
-            "args": ["-ConfigPath", "./examples/config-mac.json", "-Debug", "-NoObs", "-ReRecord"]
-        }, {
-            "name": "Start (Mac): Debug, Random, NoObs, NoDemo",
-            "type": "PowerShell",
-            "request": "launch",
-            "script": "${workspaceFolder}/start.ps1",
-            "args": ["-ConfigPath", "./examples/config-mac.json", "-Debug", "-NoObs", "-Random", "-NoDemo"]
-        }, {
-            "name": "Analyse (Mac): Debug",
-            "type": "PowerShell",
-            "request": "launch",
-            "script": "${workspaceFolder}/analyse.ps1",
-            "args": ["-ConfigPath", "./examples/config-mac.json", "-Debug"]
-        }, {
-            "name": "PS Test: functions",
-            "type": "PowerShell",
-            "request": "launch",
-            "script": "${workspaceFolder}/lib/ps/test_functions.ps1",
-            "args": ["-Debug"]
         }
     ]
 }
